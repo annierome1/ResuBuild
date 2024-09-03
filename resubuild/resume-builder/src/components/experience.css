@@ -1,0 +1,136 @@
+/* Container for the date pickers */
+.date-picker-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* Adjust the spacing between the items as needed */
+    margin-top: 1rem;
+}
+
+.date-picker-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Make the date pickers take equal space */
+}
+
+.date-picker-item label {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.date-picker-item .react-datepicker-wrapper {
+    width: 100%;
+}
+
+/* Currently working checkbox styling */
+.currently-working {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.currently-working input[type="checkbox"] {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+}
+
+.currently-working label {
+    
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* General button styling */
+button {
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    outline: none;
+}
+
+button:hover {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* Remove buttons */
+.remove-description, .remove-experience {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}
+
+
+.remove-description:hover, .remove-experience:hover {
+    background-color: #c0392b;
+}
+
+/* Add buttons */
+.add-description, .add-experience {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    width: 30%;
+}
+
+.add-description:hover, .add-experience:hover {
+    background-color: #218838;
+}
+
+/* Button group styling */
+.button-group {
+    display: flex;
+    flex-direction: column; /* Stack the buttons vertically */
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+.remove-description, .add-description {
+    width: 48%; /* Make both buttons the same width */
+    margin-right: 4%;
+    box-sizing: border-box;
+}
+
+.remove-experience {
+    margin-top: 10px;
+    width: 75%; /* Make this button larger and full width */
+    padding: 12px 20px;
+    font-size: 16px;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.previous-button, .next-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    margin-left: 5px;
+}
+
+.previous-button:hover, .next-button:hover {
+    background-color: #0056b3;
+}
+
+/* Align buttons in description-item */
+.description-item {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.description-item button {
+    margin-left: 10px;
+}
+
+
+
