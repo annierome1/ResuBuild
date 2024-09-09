@@ -11,7 +11,7 @@ const Step4 = ({ userObject, handleChange, addSkill, addCertification, addIntere
                 {userObject.certifications && userObject.certifications.map((cert, index) => (
                     <div key={index} className='certification-item'>
                         <InputItem className='certification' onChange={(e) => handleCertificationChange(index, e.target.value)} label={`Certification ${index + 1}`} placeholder='Enter Certification' name={`certification-${index}`} value={cert} />
-                        <button type='button' onClick={() => removeCertification(index)}>Remove</button>
+                        <button className = 'rbutton' type = 'button' onClick={() => removeCertification(index)}>Remove</button>
                     </div>
                 ))}
                 <button type='button' onClick={addCertification}>Add Certification</button>
@@ -22,7 +22,7 @@ const Step4 = ({ userObject, handleChange, addSkill, addCertification, addIntere
                 {userObject.skills && userObject.skills.map((skill, index) => (
                     <div key={index} className='skill-item'>
                         <InputItem className='skill' onChange={(e) => handleSkillChange(index, e.target.value)} label={`Skill ${index + 1}`} placeholder='Enter Skill' name={`skill-${index}`} value={skill} />
-                        <button type='button' onClick={() => removeSkill(index)}>Remove</button>
+                        <button className = 'rbutton' type='button' onClick={() => removeSkill(index)}>Remove</button>
                     </div>
                 ))}
                 <button type='button' onClick={addSkill}>Add Skill</button>
@@ -33,7 +33,7 @@ const Step4 = ({ userObject, handleChange, addSkill, addCertification, addIntere
                 {userObject.interests && userObject.interests.map((interest, index) => (
                     <div key={index} className='interest-item'>
                         <InputItem className='interest' onChange={(e) => handleInterestChange(index, e.target.value)} label={`Interest ${index + 1}`} placeholder='Enter Interest' name={`interest-${index}`} value={interest} />
-                        <button type='button' onClick={() => removeInterest(index)}>Remove</button>
+                        <button className='rbutton' type='button' onClick={() => removeInterest(index)}>Remove</button>
                     </div>
                 ))}
                 <button type='button' onClick={addInterest}>Add Interest</button>

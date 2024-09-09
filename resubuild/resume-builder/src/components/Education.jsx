@@ -27,7 +27,7 @@ const Step3 = ({ userObject, handleChange, handleDateChange, handleExtracurricul
                 {userObject.extracurriculars && userObject.extracurriculars.map((activity, index) => (
                     <div key={index} className='extracurricular-item'>
                         <InputItem className='activity' onChange={(e) => handleExtracurricularChange(index, e.target.value)} label={`Activity ${index + 1}`} placeholder='Enter Activity' name={`activity-${index}`} value={activity} />
-                        <button type='button' onClick={() => removeExtracurricular(index)}>Remove</button>
+                        <button className = 'rbutton' type='button' onClick={() => removeExtracurricular(index)}>Remove</button>
                     </div>
                 ))}
                 <button type='button' onClick={addExtracurricular}>Add Activity</button>
@@ -38,7 +38,7 @@ const Step3 = ({ userObject, handleChange, handleDateChange, handleExtracurricul
                 {userObject.gpaEntries && userObject.gpaEntries.map((gpaEntry, index) => (
                     <div key={index} className='gpa-item'>
                         <InputItem className='gpa' onChange={(e) => handleGPAChange(index, e.target.value)} label={`GPA ${index + 1}`} placeholder='Enter GPA' name={`gpa-${index}`} value={gpaEntry} />
-                        <button type='button' className='remove' onClick={() => removeGPA(index)}>Remove</button>
+                        <button type='button' className='rbutton' onClick={() => removeGPA(index)}>Remove</button>
                     </div>
                 ))}
                 <button type='button' onClick={addGPA}>Add GPA</button>

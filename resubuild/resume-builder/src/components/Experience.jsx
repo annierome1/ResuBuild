@@ -89,7 +89,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                                 name={`description-${index}-${descIndex}`}
                                 value={desc}
                             />
-                            <button type='button' className = 'remove-description' onClick={() => removeDescription(index, descIndex)}>Remove Description</button>
+                            <button type='button' className = 'rbutton' onClick={() => removeDescription(index, descIndex)}>Remove Description</button>
                         </div>
                     ))}
                     
@@ -97,7 +97,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                 <div className = "button-group">
                     <button type='button' className='add-description' onClick={() => addDescription(index)}>Add Description</button>
                     
-                    <button type='button' className='remove-experience' onClick={() => removeExperience(index)}>Remove Experience</button>
+                    <button type='button' className='rbutton' onClick={() => removeExperience(index)}>Remove Experience</button>
                     
                     <h3>{exp.company} <span>{updateDatesString(exp)}</span></h3>
                     </div>

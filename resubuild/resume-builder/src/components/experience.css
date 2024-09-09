@@ -59,29 +59,14 @@ button:hover {
     border-color: #007bff;
 }
 
-/* Remove buttons */
-.remove-description, .remove-experience {
-    background-color: #e74c3c;
+.rbutton:hover {
+    background-color: red;
     color: white;
-    border: none;
+    border-color: red;
+    
+
 }
 
-
-.remove-description:hover, .remove-experience:hover {
-    background-color: #c0392b;
-}
-
-/* Add buttons */
-.add-description, .add-experience {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    width: 30%;
-}
-
-.add-description:hover, .add-experience:hover {
-    background-color: #218838;
-}
 
 /* Button group styling */
 .button-group {
@@ -92,16 +77,16 @@ button:hover {
 }
 
 .remove-description, .add-description {
-    width: 48%; /* Make both buttons the same width */
+    width: 20%; /* Make both buttons the same width */
     margin-right: 4%;
     box-sizing: border-box;
 }
 
 .remove-experience {
     margin-top: 10px;
-    width: 75%; /* Make this button larger and full width */
+    width: 20%; /* Make this button larger and full width */
     padding: 12px 20px;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .nav-buttons {
