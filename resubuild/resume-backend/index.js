@@ -1,9 +1,10 @@
 import fetch from 'node-fetch';
 import express from 'express';
-import OpenAI from "openai";
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.post('/api/generate-description', async (req, res) => {
     const { title } = req.body;
@@ -24,11 +25,11 @@ app.post('/api/generate-description', async (req, res) => {
                 messages: [
                     {
                         role: "system", 
-                        content: "You are a helpful assistant that generates professional job descriptions."
+                        content: "You are helping fill in a resume, generate descriptions based on the job the user has worked."
                     },
                     {
                         role: "user", 
-                        content: `Generate 3 professional work descriptions for a job title: ${title}`
+                        content: `Generate 3 professional descriptions of what was done for this job: ${title}`
                     }
                 ],
                 max_tokens: 100,  // Limit the number of tokens in the response
