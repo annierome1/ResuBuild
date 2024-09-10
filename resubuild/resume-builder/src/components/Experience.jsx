@@ -7,6 +7,34 @@ import "./experience.css"
 
 
 const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, addExperience, addDescription, removeDescription, removeExperience }) => {
+    const [suggestions, setSuggestions] = useState({});
+
+
+    const getSuggestions = async (title, index) => {
+        if (!title) return;
+
+        try {
+            const response = await fetch('/api/generate-description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const newSuggestions = { ...suggestions, [index]: data.suggestions };
+                setSuggestions(newSuggestions);
+            } else {
+                console.error('Error fetching suggestions');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+   
+   
     const updateDatesString = (exp) => {
         const startDate = exp.startDate ? new Date(exp.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
         const endDate = exp.currentlyWorking ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
@@ -20,7 +48,10 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                 <div key={index} className='experience-group'>
                     <InputItem
                         className='title'
-                        onChange={(e) => handleExperienceChange(index, 'title', e.target.value)}
+                        onChange={(e) => {
+                            handleExperienceChange(index, 'title', e.target.value);
+                            getSuggestions(e.target.value, index); 
+                        }}
                         label='Title'
                         placeholder='Enter your job title'
                         name={`title-${index}`}
@@ -92,6 +123,16 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                             <button type='button' className = 'rbutton' onClick={() => removeDescription(index, descIndex)}>Remove Description</button>
                         </div>
                     ))}
+
+                           {/* Show AI suggestions if available */}
+                           {suggestions[index] && (
+                        <div className='suggestions'>
+                            <h4>Suggested Descriptions:</h4>
+                            {suggestions[index].map((suggestion, i) => (
+                                <p key={i}>{suggestion}</p>
+                            ))}
+                        </div>
+                    )}
                     
 
                 <div className = "button-group">
