@@ -13,18 +13,26 @@ app.post('/api/generate-description', async (req, res) => {
     }
 
     try {
-        const openAiResponse = await fetch('https://api.openai.com/v1/completions', {
+        const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer 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`,
+                'Authorization': `Bearer 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`, // Add your OpenAI API Key here
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                prompt: `Generate 3 professional work descriptions for a job title: ${title}`,
-                max_tokens: 100,
-                n: 3,
-                stop: null,
+                model: 'gpt-4o-mini', 
+                messages: [
+                    {
+                        role: "system", 
+                        content: "You are a helpful assistant that generates professional job descriptions."
+                    },
+                    {
+                        role: "user", 
+                        content: `Generate 3 professional work descriptions for a job title: ${title}`
+                    }
+                ],
+                max_tokens: 100,  // Limit the number of tokens in the response
+                n: 1,  // Number of completions to generate (for `chat` models, n refers to alternative completions, but you can just return 1 response)
             }),
         });
 
@@ -37,10 +45,10 @@ app.post('/api/generate-description', async (req, res) => {
 
         // Now, safely access 'choices' only if it exists
         if (data.choices && Array.isArray(data.choices)) {
-            const suggestions = data.choices.map(choice => choice.text.trim());
+            const suggestions = data.choices.map(choice => choice.message.content.trim());
             res.json({ suggestions });
         } else {
-            res.status(500).json({ error: 'Unexpected response from OpenAI' });
+            res.status(500).json({ error: 'Unexpected response from OpenAI' }); 
         }
     } catch (error) {
         console.error('Error fetching descriptions:', error);
