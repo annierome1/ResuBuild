@@ -18,7 +18,7 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-    border-color: #2ac952;
+    border-color: rebeccapurple;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
@@ -39,12 +39,12 @@ textarea:not(:placeholder-shown) + label {
     top: -20px;
     left: 0;
     font-size: 12px;
-    color: #2ac952;
+    color: rebeccapurple;
 }
 
 input:focus,
 textarea:focus {
-    border-color: #2ac952;
+    border-color: rebeccapurple;
 }
 
 input {
