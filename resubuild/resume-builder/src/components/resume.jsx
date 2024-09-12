@@ -5,7 +5,6 @@ import Step3 from './Education';
 import Step4 from './Skills';
 import ResumePreview from './ResumePrev';
 import StepNavigation from './Nav';
-import {useReactToPrint} from 'react-to-print'
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -57,11 +56,12 @@ const ResumeForm = () => {
     };
 
     const removeExperience = (expIndex) => {
-        const newExperience = [...userObject.experience];
-        newExperience.splice(expIndex, 1); // Remove the experience at the specified index
-        setUserObject(prevState => ({ ...prevState, experience: newExperience }));
+        setUserObject(prevState => ({
+            ...prevState,
+            experience: prevState.experience.filter((_, index) => index !== expIndex)
+        }));
     };
-
+    
     const addDescription = (index) => {
         const newExperience = [...userObject.experience];
         newExperience[index].description.push('');
@@ -225,10 +225,6 @@ const ResumeForm = () => {
         marginTop: '20px',
         alignSelf: 'flex-end',
     };
-
-    const handlePrint = useReactToPrint({
-        content: () => resumeRef.current,
-    });
 
     return (
         <div style={resumeFormStyle}>

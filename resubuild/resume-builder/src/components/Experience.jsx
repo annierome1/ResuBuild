@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import InputItem from './inputitems';
-import "./experience.css";
+import './experience.css';
 
-
-
-    // Function to fetch job description suggestions
-
-const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, addExperience, addDescription, removeDescription, removeExperience }) => {
+const Step2 = ({ 
+    userObject, 
+    handleExperienceChange, 
+    handleDescriptionChange, 
+    addExperience, 
+    addDescription, 
+    removeDescription, 
+    removeExperience 
+}) => {
     const [suggestions, setSuggestions] = useState({});
-    const [showSuggestions, setShowSuggestions] = useState({}); 
+    const [showSuggestions, setShowSuggestions] = useState({});
 
-    // Function to fetch job description suggestions
+    // Fetch AI suggestions based on job title
     const getSuggestions = async (title, index) => {
         if (!title) return;
 
@@ -27,7 +31,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
 
             if (response.ok) {
                 const data = await response.json();
-                
+
                 // Assuming data.suggestions[0] contains all descriptions as a single string
                 const splitSuggestions = data.suggestions[0]
                     .split(/(\d\.\s)/)  // Split on numbers like "1. ", "2. ", "3. "
@@ -36,6 +40,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                 const newSuggestions = { ...suggestions, [index]: splitSuggestions };
                 setSuggestions(newSuggestions);
 
+                // Show suggestions for the relevant experience index
                 const updatedShowSuggestions = { ...showSuggestions, [index]: true };
                 setShowSuggestions(updatedShowSuggestions);
 
@@ -47,7 +52,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
         }
     };
 
-    // Function to update the display string for dates
+    // Update string for start and end dates
     const updateDatesString = (exp) => {
         const startDate = exp.startDate ? new Date(exp.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
         const endDate = exp.currentlyWorking ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : '';
@@ -59,7 +64,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
             <h2>Work Experience</h2>
             {userObject.experience.map((exp, index) => (
                 <div key={index} className='experience-input-group'>
-                    {/* Title Input: Fetches suggestions on change */}
+                    {/* Job Title Input: Fetch AI Suggestions on change */}
                     <InputItem
                         className='title'
                         onChange={(e) => {
@@ -69,10 +74,10 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                         label='Title'
                         placeholder='Enter your job title'
                         name={`title-${index}`}
-                        value={exp.title}
+                        value={exp.title || ''}
                     />
-                    
-                    {/* Company Input */}
+
+                    {/* Company Name Input */}
                     <InputItem
                         className='company'
                         onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
@@ -84,7 +89,6 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
 
                     {/* Start Date Picker */}
                     <div className="experience-date">
-                        <label htmlFor={`startDate-${index}`}></label>
                         <DatePicker
                             selected={exp.startDate}
                             onChange={(date) => handleExperienceChange(index, 'startDate', date)}
@@ -97,7 +101,6 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
 
                     {/* End Date Picker */}
                     <div className="experience-date">
-                        <label htmlFor={`endDate-${index}`}></label>
                         <DatePicker
                             selected={exp.endDate}
                             onChange={(date) => handleExperienceChange(index, 'endDate', date)}
@@ -118,10 +121,9 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                             id={`currentlyWorking-${index}`}
                         />
                         <label htmlFor={`currentlyWorking-${index}`} style={{ display: 'inline-block', marginLeft: '8px' }}>
-                            Currently Working (Label should show)
+                            Currently Working
                         </label>
                     </div>
-
 
                     {/* Location Input */}
                     <InputItem
@@ -133,7 +135,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                         value={exp.location}
                     />
 
-                    {/* Job Descriptions List */}
+                    {/* Descriptions Input */}
                     {exp.description.map((desc, descIndex) => (
                         <div key={descIndex} className='description-item'>
                             <InputItem
@@ -148,7 +150,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                         </div>
                     ))}
 
-                    {/* Display AI Suggestions */}
+                    {/* Show/Hide AI Suggestions */}
                     {showSuggestions[index] ? (
                         <div className='suggestions-box'>
                             <button type="button" className="close-button" onClick={() => setShowSuggestions({ ...showSuggestions, [index]: false })}>X</button>
@@ -156,7 +158,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                             {suggestions[index].map((suggestion, i) => (
                                 <p key={i}>{suggestion.trim()}</p>
                             ))}
-                            {/* Refresh button to get new suggestions */}
+                            {/* Refresh Suggestions */}
                             <button type='button' onClick={() => getSuggestions(exp.title, index)}>Refresh Suggestions</button>
                         </div>
                     ) : (
@@ -165,7 +167,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                         </button>
                     )}
 
-                    {/* Buttons to Add or Remove Experience */}
+                    {/* Add/Remove Experience Buttons */}
                     <div className="button-group">
                         <button type='button' className='add-description' onClick={() => addDescription(index)}>Add Description</button>
                         <button type='button' className='rbutton' onClick={() => removeExperience(index)}>Remove Experience</button>
@@ -181,6 +183,5 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
         </div>
     );
 };
-
 
 export default Step2;
