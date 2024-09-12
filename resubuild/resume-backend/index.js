@@ -25,7 +25,7 @@ app.post('/api/generate-description', async (req, res) => {
                 messages: [
                     {
                         role: "system", 
-                        content: "You are helping fill in a resume, generate descriptions based on the job the user has worked."
+                        content: "You are helping fill in a resume, generate one sentence descriptions based on the job the user has worked."
                     },
                     {
                         role: "user", 

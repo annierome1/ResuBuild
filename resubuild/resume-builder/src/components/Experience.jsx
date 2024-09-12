@@ -4,8 +4,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import InputItem from './inputitems';
 import "./experience.css";
 
+
+
+    // Function to fetch job description suggestions
+
 const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, addExperience, addDescription, removeDescription, removeExperience }) => {
-    const [suggestions, setSuggestions] = useState({}); // Initialize suggestions state
+    const [suggestions, setSuggestions] = useState({});
+    const [showSuggestions, setShowSuggestions] = useState({}); 
 
     // Function to fetch job description suggestions
     const getSuggestions = async (title, index) => {
@@ -22,9 +27,18 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
 
             if (response.ok) {
                 const data = await response.json();
-                // Store the suggestions in state, mapping them by the index of the job experience
-                const newSuggestions = { ...suggestions, [index]: data.suggestions };
+                
+                // Assuming data.suggestions[0] contains all descriptions as a single string
+                const splitSuggestions = data.suggestions[0]
+                    .split(/(\d\.\s)/)  // Split on numbers like "1. ", "2. ", "3. "
+                    .filter(text => text.trim() && !/^\d\.\s/.test(text));  // Remove empty elements and numbers
+
+                const newSuggestions = { ...suggestions, [index]: splitSuggestions };
                 setSuggestions(newSuggestions);
+
+                const updatedShowSuggestions = { ...showSuggestions, [index]: true };
+                setShowSuggestions(updatedShowSuggestions);
+
             } else {
                 console.error('Error fetching suggestions');
             }
@@ -44,7 +58,7 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
         <div className='step'>
             <h2>Work Experience</h2>
             {userObject.experience.map((exp, index) => (
-                <div key={index} className='experience-group'>
+                <div key={index} className='experience-input-group'>
                     {/* Title Input: Fetches suggestions on change */}
                     <InputItem
                         className='title'
@@ -98,13 +112,16 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                     {/* Currently Working Checkbox */}
                     <div className="currently-working">
                         <input
-                            type='checkbox'
+                            type="checkbox"
                             checked={exp.currentlyWorking}
                             onChange={(e) => handleExperienceChange(index, 'currentlyWorking', e.target.checked)}
                             id={`currentlyWorking-${index}`}
                         />
-                        <label htmlFor={`currentlyWorking-${index}`}>Currently Working</label>
+                        <label htmlFor={`currentlyWorking-${index}`} style={{ display: 'inline-block', marginLeft: '8px' }}>
+                            Currently Working (Label should show)
+                        </label>
                     </div>
+
 
                     {/* Location Input */}
                     <InputItem
@@ -132,13 +149,20 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
                     ))}
 
                     {/* Display AI Suggestions */}
-                    {suggestions[index] && (
-                        <div className='suggestions'>
+                    {showSuggestions[index] ? (
+                        <div className='suggestions-box'>
+                            <button type="button" className="close-button" onClick={() => setShowSuggestions({ ...showSuggestions, [index]: false })}>X</button>
                             <h4>Suggested Descriptions:</h4>
                             {suggestions[index].map((suggestion, i) => (
-                                <p key={i}>{suggestion}</p>
+                                <p key={i}>{suggestion.trim()}</p>
                             ))}
+                            {/* Refresh button to get new suggestions */}
+                            <button type='button' onClick={() => getSuggestions(exp.title, index)}>Refresh Suggestions</button>
                         </div>
+                    ) : (
+                        <button type='button' onClick={() => setShowSuggestions({ ...showSuggestions, [index]: true })}>
+                            Show Suggestions
+                        </button>
                     )}
 
                     {/* Buttons to Add or Remove Experience */}
@@ -157,5 +181,6 @@ const Step2 = ({ userObject, handleExperienceChange, handleDescriptionChange, ad
         </div>
     );
 };
+
 
 export default Step2;

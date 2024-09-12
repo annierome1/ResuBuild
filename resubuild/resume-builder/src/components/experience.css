@@ -118,4 +118,44 @@ button:hover {
 }
 
 
+.suggestions-box {
+     /* Adjust border thickness and color */
+    padding: 10px; /* Add padding for spacing inside the box */
+    border-radius: 5px; /* Optional: rounded corners */
+    margin-top: 10px; /* Spacing above the box */
+    background-color: #e0dcda; /* Optional: light background color */
+}
+
+.suggestions-box p {
+    text-indent: 20px;
+    margin-bottom: 10px;
+
+}
+
+/* experience.css */
+
+/* Style for each experience group box on the user input side */
+.experience-input-group {
+    border: 2px solid #ddd;  /* Light border around each experience input */
+    border-radius: 8px;      /* Rounded corners */
+    padding: 15px;           /* Padding inside the box */
+    margin-bottom: 20px;     /* Space between experience items */
+    background-color: #f9f9f9;  /* Light background for contrast */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);  /* Optional: slight shadow for depth */
+}
+
+/* Style for the buttons within the input box */
+.experience-input-group .button-group {
+    margin-top: 10px;
+}
+
+/* Optional: hover effect for better interactivity */
+.experience-input-group:hover {
+    border-color: #aaa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
 
