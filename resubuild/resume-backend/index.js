@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 
 const app = express();
 app.use(express.json());
@@ -56,7 +57,16 @@ app.post('/api/generate-description', async (req, res) => {
         res.status(500).send('Error generating descriptions');
     }
 });
+// Serve static files from the React app (in production)
+app.use(express.static(path.join(path.resolve(), 'build'))); // ES module uses path.resolve()
 
-app.listen(5001, () => {
-    console.log('Server started on port 5001');
+// Catch-all handler to serve React app for any other request
+app.get('*', (req, res) => {
+    res.sendFile(path.join(path.resolve(), 'build', 'index.html')); // Adjust for ES module
+});
+
+// Start the server
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

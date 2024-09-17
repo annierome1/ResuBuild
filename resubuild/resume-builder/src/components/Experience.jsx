@@ -21,7 +21,7 @@ const Step2 = ({
         if (!title) return;
 
         try {
-            const response = await fetch('http://localhost:5001/api/generate-description', {
+            const response = await fetch('/api/generate-description', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
