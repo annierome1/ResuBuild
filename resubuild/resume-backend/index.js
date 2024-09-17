@@ -58,11 +58,11 @@ app.post('/api/generate-description', async (req, res) => {
     }
 });
 // Serve static files from the React app (in production)
-app.use(express.static(path.join(path.resolve(), 'build'))); // ES module uses path.resolve()
+app.use(express.static(path.join(__dirname, '../resume-builder/build')));
 
-// Catch-all handler to serve React app for any other request
+// Handle any other routes and serve the index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(path.resolve(), 'build', 'index.html')); // Adjust for ES module
+  res.sendFile(path.join(__dirname, '../resume-builder/build', 'index.html'));
 });
 
 // Start the server

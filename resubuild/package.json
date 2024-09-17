@@ -1,0 +1,18 @@
+{
+  "name": "resubuild",
+  "version": "1.0.0",
+  "main": "resume-backend/index.js",
+  "scripts": {
+    "start": "node resume-backend/index.js",
+    "heroku-postbuild": "npm install --prefix resume-builder && npm run build --prefix resume-builder"
+  },
+  "engines": {
+    "node": ">=14.x"
+  },
+  "dependencies": {
+    "openai": "^4.58.2",
+    "path": "^0.12.7",
+    "react-datepicker": "^7.3.0",
+    "styled-components": "^6.1.12"
+  }
+}
