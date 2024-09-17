@@ -21,6 +21,9 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "node-fetch": "^3.3.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "openai": "^4.58.2",
+    "react-datepicker": "^7.3.0",
+    "styled-components": "^6.1.12"
   }
 }
