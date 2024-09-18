@@ -58,11 +58,11 @@ app.post('/api/generate-description', async (req, res) => {
     }
 });
 // Serve static files from the React app (in production)
-app.use(express.static(path.join(__dirname, '../resume-builder/build')));
+app.use(express.static(path.join(__dirname, '../resume-backend/build')));
 
 // Handle any other routes and serve the index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../resume-builder/build', 'index.html'));
+  res.sendFile(path.join(__dirname, '../resume-backend/build', 'index.html'));
 });
 
 // Start the server
