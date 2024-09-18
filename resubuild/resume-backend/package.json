@@ -8,10 +8,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "heroku-postbuild": "cd build && npm install && npm run build"
-  },
+  "start": "node index.js",
+  "heroku-postbuild": "npm install --prefix ./resume-builder && npm run build --prefix ./resume-builder"
+},
 
   "keywords": [],
   "author": "",
