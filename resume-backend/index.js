@@ -23,7 +23,7 @@ app.post('/api/generate-description', async (req, res) => {
         const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer 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`, // Add your OpenAI API Key here
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
