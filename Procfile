@@ -1,1 +1,1 @@
-web: web: node resume-backend/index.js
+web: npm start --prefix resume-backend
