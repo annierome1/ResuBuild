@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "resume-backend/index.js",
   "scripts": {
-  "start": "cd resume-backend && node index.js",
-  "heroku-postbuild": "npm install --prefix resume-builder && npm run build --prefix resume-builder"
+  "start": "node index.js",
+  "heroku-postbuild": "npm install --prefix ./resume-builder && npm run build --prefix ./resume-builder"
 },
   "engines": {
     "node": ">=14.x"
