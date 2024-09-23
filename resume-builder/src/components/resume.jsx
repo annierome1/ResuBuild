@@ -177,31 +177,65 @@ const ResumeForm = () => {
     const prevStep = () => setCurrentStep(prevStep => prevStep - 1);
 
     const generatePDF = async () => {
-        const input = resumeRef.current;  // Target only the resume preview
+        const input = resumeRef.current;
     
-        // Check if the reference to the resume exists
         if (!input) {
             console.error("Resume ref not found!");
             return;
         }
     
-        // Use html2canvas to capture the resume preview only
-        const canvas = await html2canvas(input, {
-            scale: 2,      // Increase scale for better quality
-            useCORS: true, // Handle cross-origin images
-            logging: false // Disable logging
+        // Create a clone of the element to apply PDF-specific styles if necessary
+        const clone = input.cloneNode(true);
+        document.body.appendChild(clone); // Temporarily append to ensure styles are applied
+    
+        // Use html2canvas to capture the element with applied styles
+        const canvas = await html2canvas(clone, {
+            scale: 2, // High-quality capture
+            useCORS: true, // Allow cross-origin images
+            logging: false,
+            windowWidth: clone.scrollWidth, // Capture full width
         });
     
+        // Clean up the temporary clone after capturing
+        document.body.removeChild(clone);
+    
+        // Get image data
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        
+        // Initialize jsPDF for A4 size
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
     
-        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+        // Get canvas dimensions
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
     
+        // Calculate aspect ratio to fit content in the PDF
+        const imgHeight = (canvasHeight * pdfWidth) / canvasWidth;
+    
+        // Pagination logic: add pages if necessary
+        let heightLeft = imgHeight;
+        let position = 0;
+    
+        // Add the first page
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+    
+        // Add more pages if content is too long
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+        }
+    
+        // Download the PDF
         pdf.save('resume.pdf');
     };
+    
+    
+    
     
 
     const resumeFormStyle = {
@@ -234,9 +268,7 @@ const ResumeForm = () => {
 
     const previewContainerStyle = {
         padding: '20px',
-        border: '1px solid #ddd',
-        borderRadius: '5px',
-        backgroundColor: '#d7dbd8',
+        
         flex: 1, // Allows the preview to grow and fill the remaining space
         height: '100%',
         boxSizing: 'border-box',
