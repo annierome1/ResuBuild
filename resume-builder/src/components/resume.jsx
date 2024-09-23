@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import Step1 from './Personal';
 import Step2 from './Experience';
 import Step3 from './Education';
@@ -10,7 +10,9 @@ import html2canvas from 'html2canvas';
 
 
 const ResumeForm = () => {
-    const [userObject, setUserObject] = useState({
+    const [userObject, setUserObject] = useState(() => {
+        const savedData = localStorage.getItem('userObject');
+        return savedData ? JSON.parse(savedData): {
         experience: [{ title: '', company: '', startDate: null, endDate: null, location: '', description: [''], currentlyWorking: false }],
         gradDate: null,
         extracurriculars: [],
@@ -18,7 +20,9 @@ const ResumeForm = () => {
         skills: [],
         certifications: [],
         interests: []
+        };
     });
+    
     const [currentStep, setCurrentStep] = useState(1);
     const resumeRef = useRef();
 
@@ -173,15 +177,32 @@ const ResumeForm = () => {
     const prevStep = () => setCurrentStep(prevStep => prevStep - 1);
 
     const generatePDF = async () => {
-        const input = resumeRef.current;
-        const canvas = await html2canvas(input, { scale: 1.5, useCORS: true, logging: false }); // Adjusted scale
-        const imgData = canvas.toDataURL('image/jpeg', 0.75); // Use JPEG format for smaller file size
+        const input = resumeRef.current;  // Target only the resume preview
+    
+        // Check if the reference to the resume exists
+        if (!input) {
+            console.error("Resume ref not found!");
+            return;
+        }
+    
+        // Use html2canvas to capture the resume preview only
+        const canvas = await html2canvas(input, {
+            scale: 2,      // Increase scale for better quality
+            useCORS: true, // Handle cross-origin images
+            logging: false // Disable logging
+        });
+    
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+    
         pdf.save('resume.pdf');
     };
+    
 
     const resumeFormStyle = {
         padding: '20px',
@@ -226,23 +247,29 @@ const ResumeForm = () => {
         alignSelf: 'flex-end',
     };
 
-    return (
-        <div style={resumeFormStyle}>
-            <div style={formPreviewContainerStyle}>
-                <div style={formContainerStyle}>
-                    {currentStep === 1 && <Step1 userObject={userObject} handleChange={handleChange} />}
-                    {currentStep === 2 && <Step2 userObject={userObject} handleExperienceChange={handleExperienceChange} handleDescriptionChange={handleDescriptionChange} addExperience={addExperience} addDescription={addDescription} removeDescription={removeDescription} removeExperience={removeExperience} />}
-                    {currentStep === 3 && <Step3 userObject={userObject} handleChange={handleChange} handleDateChange={handleDateChange} addExtracurricular={addExtracurricular} addGPA={addGPA} handleExtracurricularChange={handleExtracurricularChange} handleGPAChange={handleGPAChange} removeExtracurricular={removeExtracurricular} removeGPA={removeGPA} />}
-                    {currentStep === 4 && <Step4 userObject={userObject} handleChange={handleChange} addSkill={addSkill} addCertification={addCertification} addInterest={addInterest} handleSkillChange={handleSkillChange} handleCertificationChange={handleCertificationChange} handleInterestChange={handleInterestChange} removeSkill={removeSkill} removeCertification={removeCertification} removeInterest={removeInterest} />}
-                    <StepNavigation currentStep={currentStep} totalSteps={4} nextStep={nextStep} prevStep={prevStep} />
-                </div>
-        <div style={previewContainerStyle} >
-            <ResumePreview userObject={userObject} />
-        </div>
+   return (
+    <div style={resumeFormStyle}>
+        <div style={formPreviewContainerStyle}>
+            {/* Form Section */}
+            <div style={formContainerStyle}>
+                {currentStep === 1 && <Step1 userObject={userObject} handleChange={handleChange} />}
+                {currentStep === 2 && <Step2 userObject={userObject} handleExperienceChange={handleExperienceChange} handleDescriptionChange={handleDescriptionChange} addExperience={addExperience} addDescription={addDescription} removeDescription={removeDescription} removeExperience={removeExperience} />}
+                {currentStep === 3 && <Step3 userObject={userObject} handleChange={handleChange} handleDateChange={handleDateChange} addExtracurricular={addExtracurricular} addGPA={addGPA} handleExtracurricularChange={handleExtracurricularChange} handleGPAChange={handleGPAChange} removeExtracurricular={removeExtracurricular} removeGPA={removeGPA} />}
+                {currentStep === 4 && <Step4 userObject={userObject} handleChange={handleChange} addSkill={addSkill} addCertification={addCertification} addInterest={addInterest} handleSkillChange={handleSkillChange} handleCertificationChange={handleCertificationChange} handleInterestChange={handleInterestChange} removeSkill={removeSkill} removeCertification={removeCertification} removeInterest={removeInterest} />}
+                <StepNavigation currentStep={currentStep} totalSteps={4} nextStep={nextStep} prevStep={prevStep} />
             </div>
-            <button style={buttonStyle} onClick={generatePDF}>Download as PDF</button>
+
+            {/* Resume Preview Section - This is the only part that will be captured in the PDF */}
+            <div style={previewContainerStyle} ref={resumeRef}>
+                <ResumePreview userObject={userObject} />
+            </div>
         </div>
-    );
-};
+
+        {/* Button to download the resume as PDF */}
+        <button style={buttonStyle} onClick={generatePDF}>Download as PDF</button>
+    </div>
+);
+}
+
 
 export default ResumeForm;
