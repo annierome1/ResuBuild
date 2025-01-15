@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import Step1 from './Personal';
 import Step2 from './Experience';
 import Step3 from './Education';
@@ -7,9 +7,19 @@ import ResumePreview from './ResumePrev';
 import StepNavigation from './Nav';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import Login from './Login';
+import LoginPage from './LoginPage';
+import { useNavigate } from 'react-router-dom';
+import PopUp from './Contact';
+
+console.log('Login:', Login);
 
 
 const ResumeForm = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
+    const [username, setUsername] = useState(localStorage.getItem('username') || null);
+    const [isSigningUp, setIsSigningUp] = useState(false);
     const [userObject, setUserObject] = useState(() => {
         const savedData = localStorage.getItem('userObject');
         return savedData ? JSON.parse(savedData): {
@@ -25,6 +35,108 @@ const ResumeForm = () => {
     
     const [currentStep, setCurrentStep] = useState(1);
     const resumeRef = useRef();
+    const navigate = useNavigate();
+
+    
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+
+    //Auto-save progress to local storage
+    useEffect(()=> {
+        localStorage.setItem('userObject', JSON.stringify(userObject));
+    }, [userObject]);
+
+    // Save progress to backend
+    const saveToBackend = async (token) => {
+        if (!token) {
+            alert('Please log in to save your progress.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/save-resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ resumeData: userObject }),
+            });
+
+            if (response.ok) {
+                alert('Progress saved to your account!');
+            } else {
+                alert('Failed to save progress.');
+            }
+        } catch (error) {
+            console.error('Error saving progress:', error);
+        }
+    };
+
+    // Load progress from backend
+    const loadFromBackend = async (token) => {
+        if (!token) {
+            alert('Please log in to load your progress.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/get-resumes', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.resumes && data.resumes[0]) {
+                    setUserObject(data.resumes[0]);
+                }
+            } else {
+                alert('Failed to load progress.');
+            }
+        } catch (error) {
+            console.error('Error loading progress:', error);
+        }
+    };
+
+    const handleLogin = (token) => {
+        setUserToken(token); // Update state
+        alert('You are now logged in!');
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token'); // Clear token
+        setUserToken(null);
+        alert('You are now logged out!');
+    };
+
+    
+
+    const handleSignUp = async (username, password) => {
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (response.ok) {
+                alert('Sign-up successful! Please log in.');
+                setIsSigningUp(false); // Redirect to login
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Failed to sign up.');
+            }
+        } catch (error) {
+            console.error('Error during sign-up:', error);
+            alert('An error occurred. Please try again.');
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -65,6 +177,8 @@ const ResumeForm = () => {
             experience: prevState.experience.filter((_, index) => index !== expIndex)
         }));
     };
+    
+    
     
     const addDescription = (index) => {
         const newExperience = [...userObject.experience];
@@ -154,23 +268,23 @@ const ResumeForm = () => {
         setUserObject(prevState => ({ ...prevState, certifications: newCertifications }));
     };
 
-    const addInterest = () => {
+    const addCourse = () => {
         setUserObject(prevState => ({
             ...prevState,
-            interests: [...prevState.interests, '']
+            courses: [...prevState.courses, '']
         }));
     };
 
-    const handleInterestChange = (index, value) => {
-        const newInterests = [...userObject.interests];
-        newInterests[index] = value;
-        setUserObject(prevState => ({ ...prevState, interests: newInterests }));
+    const handleCourseChange = (index, value) => {
+        const newCourses = [...userObject.courses];
+        newCourses[index] = value;
+        setUserObject(prevState => ({ ...prevState, courses: newCourses }));
     };
 
-    const removeInterest = (index) => {
-        const newInterests = [...userObject.interests];
-        newInterests.splice(index, 1);
-        setUserObject(prevState => ({ ...prevState, interests: newInterests }));
+    const removeCourse = (index) => {
+        const newCourses = [...userObject.courses];
+        newCourses.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, courses: newCourses }));
     };
 
     const nextStep = () => setCurrentStep(prevStep => prevStep + 1);
@@ -184,67 +298,75 @@ const ResumeForm = () => {
             return;
         }
     
-        // Create a clone of the element to apply PDF-specific styles if necessary
-        const clone = input.cloneNode(true);
-        document.body.appendChild(clone); // Temporarily append to ensure styles are applied
+        try {
+            const originalStyle = {
+                padding: input.style.padding,
+                margin: input.style.margin,
+                boxSizing: input.style.boxSizing,
+                width: input.style.width,
+                height: input.style.height,
+                overflow: input.style.overflow,
+            };
     
-        // Use html2canvas to capture the element with applied styles
-        const canvas = await html2canvas(clone, {
-            scale: 2, // High-quality capture
-            useCORS: true, // Allow cross-origin images
-            logging: false,
-            windowWidth: clone.scrollWidth, // Capture full width
-        });
+            input.style.padding = '0';
+            input.style.margin = '0';
+            input.style.boxSizing = 'border-box';
+            input.style.width = '8.5in'; 
+            input.style.height = '11in'; 
+            input.style.overflow = 'visible';
     
-        // Clean up the temporary clone after capturing
-        document.body.removeChild(clone);
+         
+            const canvas = await html2canvas(input, {
+                scale: 1, 
+                useCORS: true,
+                logging: false,
+                scrollX: 0,
+                scrollY: 0,
+                width: input.offsetWidth, 
+                height: input.offsetHeight, 
+            });
     
-        // Get image data
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        
-        // Initialize jsPDF for A4 size
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
+            
+            input.style.padding = originalStyle.padding;
+            input.style.margin = originalStyle.margin;
+            input.style.boxSizing = originalStyle.boxSizing;
+            input.style.width = originalStyle.width;
+            input.style.height = originalStyle.height;
+            input.style.overflow = originalStyle.overflow;
     
-        // Get canvas dimensions
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
+            // Convert canvas to image data
+            const imgData = canvas.toDataURL('image/png', 0.7);
     
-        // Calculate aspect ratio to fit content in the PDF
-        const imgHeight = (canvasHeight * pdfWidth) / canvasWidth;
+            
+            const pdf = new jsPDF('p', 'mm', 'letter');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
     
-        // Pagination logic: add pages if necessary
-        let heightLeft = imgHeight;
-        let position = 0;
+            // Calculate image dimensions to fit exactly on the page
+            const imgWidth = pdfWidth;
+            const imgHeight = pdfHeight;
     
-        // Add the first page
-        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
+            // Add the image to the PDF, filling the entire page
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
     
-        // Add more pages if content is too long
-        while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
-            heightLeft -= pdfHeight;
+            // Save the PDF
+            const firstName = userObject?.firstName || 'FirstName'; 
+            const lastName = userObject?.lastName || 'LastName'; 
+            const fileName = `resume_${firstName}_${lastName}.pdf`;
+    
+            // Save the PDF with the dynamic filename
+            pdf.save(fileName);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
         }
-    
-        // Download the PDF
-        pdf.save('resume.pdf');
     };
+    
+
     
     
     
     
 
-    const resumeFormStyle = {
-        padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        
-    };
 
     const formPreviewContainerStyle = {
         display: 'flex',
@@ -260,48 +382,136 @@ const ResumeForm = () => {
         border: '1px solid #ddd',
         borderRadius: '5px',
         backgroundColor: '#d7dbd8',
-        flex: 1, // Allows the preview to grow and fill the remaining space
+        flex: 1, 
         height: '100%',
         boxSizing: 'border-box',
-        overflowY: 'auto', // Adds scroll to the preview if it overflows
+        overflowY: 'auto', 
     };
 
     const previewContainerStyle = {
         padding: '20px',
         
-        flex: 1, // Allows the preview to grow and fill the remaining space
+        flex: 1, 
         height: '100%',
         boxSizing: 'border-box',
-        overflowY: 'auto', // Adds scroll to the preview if it overflows
+        overflowY: 'auto', 
     };
     const buttonStyle = {
         marginTop: '20px',
         alignSelf: 'flex-end',
     };
+  
+    return (
+        <div style={{ padding: '20px', height: '100vh' }}>
+            {/* Header Section */}
+            <header
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '20px',
+                    borderBottom: '1px solid #ddd',
+                    paddingBottom: '10px',
+                }}
+            >
+                <h1>Resume Builder</h1>
+                {username ? (
+                    <span style={{ marginRight: '15px' }}>Welcome, {username}</span>
+                ) : (
+                     userToken && <span style={{ marginRight: '15px' }}>Welcome, User</span> // Fallback for token without username
+                )}
+                {userToken ? (
+    <>
+        <button onClick={handleLogout} style={{ marginRight: '10px' }}>
+            Logout
+        </button>
+        <button onClick={() => saveToBackend(userToken)} style={{ marginRight: '10px' }}>
+            Save Progress
+        </button>
+        <button onClick={() => loadFromBackend(userToken)}>
+            Load Progress
+        </button>
+    </>
+                    ) : (
+                        <button
+                            onClick={() => navigate('/login')}
+                            style={{
+                                backgroundColor: 'blue',
+                                color: 'white',
+                                border: 'none',
+                                padding: '10px 15px',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            Login / Sign Up
+                        </button>
+                    )}
+                    <button onClick={openModal} style={{ marginLeft: '10px' }}>
+                        About Me
+                    </button>
+                </header>
 
-   return (
-    <div style={resumeFormStyle}>
-        <div style={formPreviewContainerStyle}>
-            {/* Form Section */}
-            <div style={formContainerStyle}>
-                {currentStep === 1 && <Step1 userObject={userObject} handleChange={handleChange} />}
-                {currentStep === 2 && <Step2 userObject={userObject} handleExperienceChange={handleExperienceChange} handleDescriptionChange={handleDescriptionChange} addExperience={addExperience} addDescription={addDescription} removeDescription={removeDescription} removeExperience={removeExperience} />}
-                {currentStep === 3 && <Step3 userObject={userObject} handleChange={handleChange} handleDateChange={handleDateChange} addExtracurricular={addExtracurricular} addGPA={addGPA} handleExtracurricularChange={handleExtracurricularChange} handleGPAChange={handleGPAChange} removeExtracurricular={removeExtracurricular} removeGPA={removeGPA} />}
-                {currentStep === 4 && <Step4 userObject={userObject} handleChange={handleChange} addSkill={addSkill} addCertification={addCertification} addInterest={addInterest} handleSkillChange={handleSkillChange} handleCertificationChange={handleCertificationChange} handleInterestChange={handleInterestChange} removeSkill={removeSkill} removeCertification={removeCertification} removeInterest={removeInterest} />}
-                <StepNavigation currentStep={currentStep} totalSteps={4} nextStep={nextStep} prevStep={prevStep} />
+            {/* Form and Preview Section */}
+            <div style={formPreviewContainerStyle}>
+                {/* Form Section */}
+                <div style={formContainerStyle}>
+                    {currentStep === 1 && <Step1 userObject={userObject} handleChange={handleChange} />}
+                    {currentStep === 2 && (
+                        <Step2
+                            userObject={userObject}
+                            handleExperienceChange={handleExperienceChange}
+                            handleDescriptionChange={handleDescriptionChange}
+                            addExperience={addExperience}
+                            addDescription={addDescription}
+                            removeDescription={removeDescription}
+                            removeExperience={removeExperience}
+                        />
+                    )}
+                    {currentStep === 3 && (
+                        <Step3
+                            userObject={userObject}
+                            handleChange={handleChange}
+                            handleDateChange={handleDateChange}
+                            addExtracurricular={addExtracurricular}
+                            addGPA={addGPA}
+                            handleExtracurricularChange={handleExtracurricularChange}
+                            handleGPAChange={handleGPAChange}
+                            removeExtracurricular={removeExtracurricular}
+                            removeGPA={removeGPA}
+                        />
+                    )}
+                    {currentStep === 4 && (
+                        <Step4
+                            userObject={userObject}
+                            handleChange={handleChange}
+                            addSkill={addSkill}
+                            addCertification={addCertification}
+                            addCourse={addCourse}
+                            handleSkillChange={handleSkillChange}
+                            handleCertificationChange={handleCertificationChange}
+                            handleCourseChange={handleCourseChange}
+                            removeSkill={removeSkill}
+                            removeCertification={removeCertification}
+                            removeCourse={removeCourse}
+                        />
+                    )}
+                    <StepNavigation
+                        currentStep={currentStep}
+                        totalSteps={4}
+                        nextStep={nextStep}
+                        prevStep={prevStep}
+                    />
+                </div>
+                <div style={previewContainerStyle} ref={resumeRef}>
+                    <ResumePreview userObject={userObject} />
+                </div>
             </div>
-
-            {/* Resume Preview Section - This is the only part that will be captured in the PDF */}
-            <div style={previewContainerStyle} ref={resumeRef}>
-                <ResumePreview userObject={userObject} />
-            </div>
+            <button style={buttonStyle} onClick={generatePDF}>
+                Download as PDF
+            </button>
         </div>
-
-        {/* Button to download the resume as PDF */}
-        <button style={buttonStyle} onClick={generatePDF}>Download as PDF</button>
-    </div>
-);
-}
-
+    );
+};
 
 export default ResumeForm;

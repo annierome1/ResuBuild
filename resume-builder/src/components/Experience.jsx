@@ -32,7 +32,7 @@ const Step2 = ({
             if (response.ok) {
                 const data = await response.json();
 
-                // Assuming data.suggestions[0] contains all descriptions as a single string
+                
                 const splitSuggestions = data.suggestions[0]
                     .split(/(\d\.\s)/)  // Split on numbers like "1. ", "2. ", "3. "
                     .filter(text => text.trim() && !/^\d\.\s/.test(text));  // Remove empty elements and numbers
@@ -171,7 +171,6 @@ const Step2 = ({
                     <div className="button-group">
                         <button type='button' className='add-description' onClick={() => addDescription(index)}>Add Description</button>
                         <button type='button' className='rbutton' onClick={() => removeExperience(index)}>Remove Experience</button>
-                        <h3>{exp.company} <span>{updateDatesString(exp)}</span></h3>
                     </div>
                 </div>
             ))}

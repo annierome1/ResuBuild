@@ -3,7 +3,7 @@ import './ResumePrev.css';
 
 const ResumePreview = ({ userObject }) => {
     return (
-        <div className='resume-preview'>
+        <div className='resume-container'>
             <div className='header'>
                 <h1>{userObject.firstName} {userObject.lastName}</h1>
                 <div className='contact'>
@@ -48,25 +48,28 @@ const ResumePreview = ({ userObject }) => {
                     {userObject.gpaEntries && userObject.gpaEntries.map((gpaEntry, idx) => (
                             <li key={idx}><strong>GPA:</strong> {gpaEntry}</li>
                         ))}
-                        {userObject.extracurriculars && userObject.extracurriculars.map((activity, idx) => (
-                            <li key={idx}>{activity}</li>
-                        ))}
+                        {userObject.extracurriculars && userObject.extracurriculars.length > 0 && (
+                            <li><strong>Clubs and Extracurriculars:</strong> {userObject.extracurriculars.join(';  ')}</li>
+                        )}
                         
                     </ul>
                 </div>
             </div>
             <div className='section'>
-                <h2>Certifications, Skills, & Interests</h2>
+                <h2>Skills & Courses Taken</h2>
                 <ul className='description'>
+                    <ul className = "skills-courses"> 
+
                     {userObject.certifications && userObject.certifications.length > 0 && (
                         <li><strong>Certifications:</strong> {userObject.certifications.join('; ')}</li>
                     )}
                     {userObject.skills && userObject.skills.length > 0 && (
                         <li><strong>Skills:</strong> {userObject.skills.join('; ')}</li>
                     )}
-                    {userObject.interests && userObject.interests.length > 0 && (
-                        <li><strong>Interests:</strong> {userObject.interests.join('; ')}</li>
+                    {userObject.courses && userObject.courses.length > 0 && (
+                        <li><strong>Courses Taken:</strong> {userObject.courses.join('; ')}</li>
                     )}
+                    </ul>
                 </ul>
             </div>
         </div>

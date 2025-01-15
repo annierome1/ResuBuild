@@ -3,9 +3,8 @@ import './inputitems.css';
 
 const InputItem = ({ label, placeholder = ' ', name, onChange, type = 'text', isTextArea = false, className, value }) => {
     return (
-        <div className={`row ${className}`}> {/* Fixed template string */}
+        <div className={`row ${className}`}> 
             <div className='input'>
-                {/* Use value prop for controlled inputs */}
                 {!isTextArea ? (
                     <input 
                         onChange={onChange} 

@@ -1,10 +1,10 @@
 import React from 'react';
 import InputItem from './inputitems';
 
-const Step4 = ({ userObject, handleChange, addSkill, addCertification, addInterest, handleSkillChange, handleCertificationChange, handleInterestChange, removeSkill, removeCertification, removeInterest }) => {
+const Step4 = ({ userObject, handleChange, addSkill, addCertification, addCourse, handleSkillChange, handleCertificationChange, handleCourseChange, removeSkill, removeCertification, removeCourse }) => {
     return (
         <div className='step'>
-            <h2>Certifications, Skills, & Interests</h2>
+            <h2>Skills & Courses Taken</h2>
 
             <div className='certifications'>
                 <h3>Certifications</h3>
@@ -28,15 +28,15 @@ const Step4 = ({ userObject, handleChange, addSkill, addCertification, addIntere
                 <button type='button' onClick={addSkill}>Add Skill</button>
             </div>
 
-            <div className='interests'>
-                <h3>Interests</h3>
-                {userObject.interests && userObject.interests.map((interest, index) => (
-                    <div key={index} className='interest-item'>
-                        <InputItem className='interest' onChange={(e) => handleInterestChange(index, e.target.value)} label={`Interest ${index + 1}`} placeholder='Enter Interest' name={`interest-${index}`} value={interest} />
-                        <button className='rbutton' type='button' onClick={() => removeInterest(index)}>Remove</button>
+            <div className='courses'>
+                <h3>Relevant Courses Taken</h3>
+                {userObject.courses && userObject.courses.map((course, index) => (
+                    <div key={index} className='course-item'>
+                        <InputItem className='course' onChange={(e) => handleCourseChange(index, e.target.value)} label={`Course ${index + 1}`} placeholder='Enter Course' name={`course-${index}`} value={course} />
+                        <button className='rbutton' type='button' onClick={() => removeCourse(index)}>Remove</button>
                     </div>
                 ))}
-                <button type='button' onClick={addInterest}>Add Interest</button>
+                <button type='button' onClick={addCourse}>Add Course</button>
             </div>
         </div>
     );
