@@ -222,13 +222,12 @@ app.get('/api/get-resumes', authenticate, async (req, res) => {
     }
 });
 
-// Serve static files from the React app (in production)
-app.use(express.static(path.join(__dirname, '../resume-backend/build')));
+// Serve static files from the frontend build folder
+app.use(express.static(path.join(__dirname, '../resume-builder/build')));
 
-
-// Handle any other routes and serve the index.html
+// Handle all other routes by serving the frontend's index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../resume-backend/build', 'index.html'));
+  res.sendFile(path.join(__dirname, '../resume-builder/build', 'index.html'));
 });
 
 // Start the server
