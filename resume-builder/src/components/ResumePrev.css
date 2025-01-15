@@ -5,7 +5,8 @@
     height: 1056px; /* 11 inches */
     margin: 0 auto; 
     padding: 20px;
-    background-color: white; 
+    background-color: white;
+    color: black; 
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden; 
 }

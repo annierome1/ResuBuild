@@ -317,7 +317,7 @@ const ResumeForm = () => {
     
          
             const canvas = await html2canvas(input, {
-                scale: 1, 
+                scale: 2, 
                 useCORS: true,
                 logging: false,
                 scrollX: 0,
@@ -335,7 +335,7 @@ const ResumeForm = () => {
             input.style.overflow = originalStyle.overflow;
     
             // Convert canvas to image data
-            const imgData = canvas.toDataURL('image/png', 0.7);
+            const imgData = canvas.toDataURL('image/jpeg', 0.7);
     
             
             const pdf = new jsPDF('p', 'mm', 'letter');
@@ -347,7 +347,7 @@ const ResumeForm = () => {
             const imgHeight = pdfHeight;
     
             // Add the image to the PDF, filling the entire page
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
     
             // Save the PDF
             const firstName = userObject?.firstName || 'FirstName'; 
