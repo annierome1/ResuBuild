@@ -11,7 +11,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-  "heroku-postbuild": "npm install --prefix ./resume-builder && npm run build --prefix ./resume-builder"
+  "heroku-postbuild": "cd ../resume-builder && npm install && npm run build && cd ../resume-backend"
 },
 
   "keywords": [],
