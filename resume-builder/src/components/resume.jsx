@@ -16,7 +16,6 @@ console.log('Login:', Login);
 
 
 const ResumeForm = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);
     const [isSigningUp, setIsSigningUp] = useState(false);
@@ -38,9 +37,10 @@ const ResumeForm = () => {
     const navigate = useNavigate();
 
     
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
+    
 
     //Auto-save progress to local storage
     useEffect(()=> {
@@ -361,7 +361,38 @@ const ResumeForm = () => {
         }
     };
     
+const modalOverlayStyle = {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+    };
 
+    const modalContentStyle = {
+        backgroundColor: "#fff",
+        padding: "20px",
+        borderRadius: "8px",
+        width: "80%",
+        maxWidth: "500px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        textAlign: "center",
+    };
+
+    const closeButtonStyle = {
+        marginTop: "20px",
+        padding: "10px 20px",
+        backgroundColor: "#007bff",
+        color: "#fff",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+    };
     
     
     
@@ -401,60 +432,80 @@ const ResumeForm = () => {
         alignSelf: 'flex-end',
     };
   
+
     return (
-        <div style={{ padding: '20px', height: '100vh' }}>
-            {/* Header Section */}
+        <div style={{ padding: "20px", height: "100vh" }}>
             <header
                 style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '20px',
-                    borderBottom: '1px solid #ddd',
-                    paddingBottom: '10px',
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    borderBottom: "1px solid #ddd",
+                    paddingBottom: "10px",
                 }}
             >
                 <h1>Resume Builder</h1>
                 {username ? (
-                    <span style={{ marginRight: '15px' }}>Welcome, {username}</span>
+                    <span style={{ marginRight: "15px" }}></span>
                 ) : (
-                     userToken && <span style={{ marginRight: '15px' }}>Welcome, User</span> // Fallback for token without username
+                    userToken && <span style={{ marginRight: "15px" }}></span>
                 )}
                 {userToken ? (
-    <>
-        <button onClick={handleLogout} style={{ marginRight: '10px' }}>
-            Logout
-        </button>
-        <button onClick={() => saveToBackend(userToken)} style={{ marginRight: '10px' }}>
-            Save Progress
-        </button>
-        <button onClick={() => loadFromBackend(userToken)}>
-            Load Progress
-        </button>
-    </>
-                    ) : (
-                        <button
-                            onClick={() => navigate('/login')}
-                            style={{
-                                backgroundColor: 'blue',
-                                color: 'white',
-                                border: 'none',
-                                padding: '10px 15px',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            Login / Sign Up
+                    <>
+                        <button onClick={handleLogout} style={{ marginRight: "10px" }}>
+                            Logout
                         </button>
-                    )}
-                    <button onClick={openModal} style={{ marginLeft: '10px' }}>
-                        About Me
+                        <button
+                            onClick={() => saveToBackend(userToken)}
+                            style={{ marginRight: "10px" }}
+                        >
+                            Save Progress
+                        </button>
+                        <button onClick={() => loadFromBackend(userToken)}>
+                            Load Progress
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        onClick={() => navigate("/login")}
+                        style={{
+                            backgroundColor: "blue",
+                            color: "white",
+                            border: "none",
+                            padding: "10px 15px",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Login / Sign Up
                     </button>
-                </header>
+                )}
+                <button onClick={openModal} style={{ marginLeft: "10px" }}>
+                    About Me
+                </button>
+            </header>
 
-            {/* Form and Preview Section */}
+            {isModalOpen && (
+                <div style={modalOverlayStyle}>
+                    <div style={modalContentStyle}>
+                        <h2>About Me</h2>
+                        <p>Developed by Annie Rome</p>
+                        <p>Sign Up to save your progress, all users are stored in a MongoDB backend with an encrypted password</p>
+                        <p>
+                            Check out my portfolio here:{" "}
+                            <a href="https://www.anniecaroline.com/" target="_blank" rel="noopener noreferrer">
+                                My Portfolio
+                            </a>
+                        </p>
+                        <button onClick={closeModal} style={closeButtonStyle}>
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div style={formPreviewContainerStyle}>
-                {/* Form Section */}
                 <div style={formContainerStyle}>
                     {currentStep === 1 && <Step1 userObject={userObject} handleChange={handleChange} />}
                     {currentStep === 2 && (
@@ -512,6 +563,6 @@ const ResumeForm = () => {
             </button>
         </div>
     );
-};
+}
 
 export default ResumeForm;

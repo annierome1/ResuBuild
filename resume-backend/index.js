@@ -104,9 +104,6 @@ app.post('/api/generate-description', async (req, res) => {
 
 
 
-
-
-
 app.post('/api/signup', async (req, res) => {
     const { username, password } = req.body;
 
@@ -140,31 +137,6 @@ app.post('/api/signup', async (req, res) => {
 
 
 
-/*
-
-app.post('/api/signup', async (req, res) => {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
-    }
-
-    try {
-        // Hash the password (using bcrypt, for example)
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Save user to the database
-        const newUser = new User({ username, password: hashedPassword });
-        await newUser.save();
-
-        res.status(201).json({ message: 'User created successfully' });
-    } catch (error) {
-        console.error('Error during sign-up:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-*/
 // User login
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
@@ -223,11 +195,11 @@ app.get('/api/get-resumes', authenticate, async (req, res) => {
 });
 
 // Serve static files from the frontend build folder
-app.use(express.static(path.join(__dirname, '../resume-builder/build')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 // Handle all other routes by serving the frontend's index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../resume-builder/build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build/index.html'));
 });
 
 // Start the server

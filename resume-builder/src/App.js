@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import ResumeForm from './components/resume';
-import PopUp from './components/Contact'; 
 import LoginPage from './components/LoginPage';
 
 
@@ -9,7 +8,6 @@ import LoginPage from './components/LoginPage';
 
 
 function App() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);
     
@@ -29,9 +27,8 @@ function App() {
         setUsername(null);
     };
 
-    // Open and close modal functions
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+
+
 
     return (
         <Router>
@@ -43,9 +40,6 @@ function App() {
                             <ResumeForm
                                 userToken={userToken}
                                 handleLogout={handleLogout}
-                                isModalOpen={isModalOpen}
-                                openModal={openModal}
-                                closeModal={closeModal}
                             />
                         }
                     />
@@ -54,20 +48,7 @@ function App() {
                         element={<LoginPage onLogin={handleLogin} />}
                     />
                 </Routes>
-
-                {/* Modal */}
-                {isModalOpen && (
-                    <PopUp isOpen={isModalOpen} onClose={closeModal} title="About Me">
-                        <p>Developed by Annie Rome</p>
-                        <p>Sign Up to save your progress, all users are stored in a MongoDB backend with an encrypted password</p>
-                        <p>
-                            Check out my portfolio here:{" "}
-                            <a href="https://www.anniecaroline.com/" target="_blank" rel="noopener noreferrer">
-                                My Portfolio
-                            </a>
-                        </p>
-                    </PopUp>
-                )}
+            
             </div>
         </Router>
 
