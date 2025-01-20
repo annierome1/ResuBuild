@@ -1,9 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './ResumePrev.css';
 
-const ResumePreview = ({ userObject }) => {
+// Use React.forwardRef to forward the ref properly
+const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
+    // Function to check for overflow
+    const checkContentOverflow = () => {
+        if (!ref?.current) return;
+
+        const resumeContainer = ref.current;
+        const containerHeight = resumeContainer.offsetHeight; // Defined height (1056px)
+        const contentHeight = resumeContainer.scrollHeight; // Actual content height
+
+        console.log({ containerHeight, contentHeight });
+    };
+    
+    // Check overflow on mount and when content changes
+    useEffect(() => {
+        checkContentOverflow();
+    }, [userObject]);
+
+    const sortedExperiences = [...userObject.experience].sort((a, b) => {
+        const dateA = a.startDate ? new Date(a.startDate) : new Date(0); // Treat null dates as earliest
+        const dateB = b.startDate ? new Date(b.startDate) : new Date(0);
+        return dateB - dateA; // Descending order
+    });
+
     return (
-        <div className='resume-container'>
+        <div>
+         <div ref ={ref} className='resume-container'>
             <div className='header'>
                 <h1>{userObject.firstName} {userObject.lastName}</h1>
                 <div className='contact'>
@@ -15,7 +39,7 @@ const ResumePreview = ({ userObject }) => {
             </div>
             <div className='section'>
                 <h2>Work Experience</h2>
-                {userObject.experience && userObject.experience.map((exp, index) => (
+                {sortedExperiences.map((exp, index) => (
                     <div key={index} className='experience-item'>
                     <div className='company-title'>
                         <h3>{exp.company}</h3>
@@ -73,7 +97,14 @@ const ResumePreview = ({ userObject }) => {
                 </ul>
             </div>
         </div>
+           {/* Warning for overflow */}
+           {isOverflowing && (
+                <div style={{ color: 'red', marginTop: '10px' }}>
+                    Your resume exceeds the one-page limit. Please reduce the content to fit within a single page.
+                </div>
+            )}
+        </div>
     );
-};
+});
 
 export default ResumePreview;

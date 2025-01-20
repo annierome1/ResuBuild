@@ -3,10 +3,6 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import ResumeForm from './components/resume';
 import LoginPage from './components/LoginPage';
 
-
-
-
-
 function App() {
     const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);

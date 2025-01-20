@@ -8,9 +8,7 @@ import StepNavigation from './Nav';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Login from './Login';
-import LoginPage from './LoginPage';
 import { useNavigate } from 'react-router-dom';
-import PopUp from './Contact';
 
 console.log('Login:', Login);
 
@@ -34,6 +32,7 @@ const ResumeForm = () => {
     
     const [currentStep, setCurrentStep] = useState(1);
     const resumeRef = useRef();
+    const [isOverflowing, setIsOverflowing] = useState(false);
     const navigate = useNavigate();
 
     
@@ -137,6 +136,7 @@ const ResumeForm = () => {
             alert('An error occurred. Please try again.');
         }
     };
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -289,6 +289,71 @@ const ResumeForm = () => {
 
     const nextStep = () => setCurrentStep(prevStep => prevStep + 1);
     const prevStep = () => setCurrentStep(prevStep => prevStep - 1);
+    
+    const checkContentOverflow = () => {
+        if (!resumeRef?.current) return;
+    
+        const resumeContainer = resumeRef.current;
+        const header = resumeContainer.querySelector('.header');
+        const sections = resumeContainer.querySelectorAll('.section');
+    
+        let totalContentHeight = 0;
+    
+        // Include header height
+        if (header) {
+            const headerRect = header.getBoundingClientRect();
+            totalContentHeight += headerRect.height; // Include full height (with margins/padding)
+            console.log("Header height with margins/padding:", headerRect.height);
+        }
+    
+        // Add heights of all sections
+        sections.forEach((section, index) => {
+            const sectionRect = section.getBoundingClientRect();
+            totalContentHeight += sectionRect.height;
+    
+            console.log(`Section ${index + 1}:`, {
+                height: sectionRect.height,
+                content: section.innerHTML.trim().slice(0, 100),
+            });
+        });
+    
+        // Adjust threshold if necessary
+        const containerHeight = 1002; // Use observed threshold for overflow
+        console.log({
+            containerHeight,
+            totalContentHeight,
+        });
+    
+        // Update overflow state
+        setIsOverflowing(totalContentHeight > containerHeight);
+    };
+    
+    
+    
+    
+    
+    
+    
+
+    useEffect(() => {
+        // Check overflow initially
+        console.log("Mutation detected");
+        checkContentOverflow();
+
+        // Set up a MutationObserver for real-time detection
+        const observer = new MutationObserver(() => checkContentOverflow());
+        if (resumeRef.current) {
+            observer.observe(resumeRef.current, {
+                childList: true,
+                subtree: true,
+                characterData: true,
+            });
+        }
+
+        // Cleanup the observer
+        return () => observer.disconnect();
+    }, []);
+
 
     const generatePDF = async () => {
         const input = resumeRef.current;
@@ -361,7 +426,7 @@ const ResumeForm = () => {
         }
     };
     
-const modalOverlayStyle = {
+    const modalOverlayStyle = {
         position: "fixed",
         top: 0,
         left: 0,
@@ -414,16 +479,16 @@ const modalOverlayStyle = {
         borderRadius: '5px',
         backgroundColor: '#d7dbd8',
         flex: 1, 
-        height: '100%',
+        height: '1056',
         boxSizing: 'border-box',
         overflowY: 'auto', 
     };
 
     const previewContainerStyle = {
-        padding: '20px',
-        
+        width: "816px",
+        height: "1056px",
+        padding: '10px',
         flex: 1, 
-        height: '100%',
         boxSizing: 'border-box',
         overflowY: 'auto', 
     };
@@ -431,7 +496,7 @@ const modalOverlayStyle = {
         marginTop: '20px',
         alignSelf: 'flex-end',
     };
-  
+
 
     return (
         <div style={{ padding: "20px", height: "100vh" }}>
@@ -482,20 +547,18 @@ const modalOverlayStyle = {
                     </button>
                 )}
                 <button onClick={openModal} style={{ marginLeft: "10px" }}>
-                    About Me
+                    About
                 </button>
             </header>
 
             {isModalOpen && (
                 <div style={modalOverlayStyle}>
                     <div style={modalContentStyle}>
-                        <h2>About Me</h2>
-                        <p>Developed by Annie Rome</p>
-                        <p>Sign Up to save your progress, all users are stored in a MongoDB backend with an encrypted password</p>
-                        <p>
-                            Check out my portfolio here:{" "}
+                        <h2>About the app</h2>
+                        <p>This dynamic, one-page resume builder is designed with simplicity in mind—just what many employers are looking for today. Create and preview your resume in real-time! Add experience items effortlessly by using the "Show Suggestions" button, powered by OpenAI's API, to generate tailored descriptions for your job title. Want to save your progress? Simply sign up and click "Save Progress" to pick up right where you left off </p>
+                        <p>Developed by {""}
                             <a href="https://www.anniecaroline.com/" target="_blank" rel="noopener noreferrer">
-                                My Portfolio
+                                Annie Rome
                             </a>
                         </p>
                         <button onClick={closeModal} style={closeButtonStyle}>
@@ -555,10 +618,16 @@ const modalOverlayStyle = {
                     />
                 </div>
                 <div style={previewContainerStyle} ref={resumeRef}>
-                    <ResumePreview userObject={userObject} />
+                <ResumePreview
+                    ref={resumeRef}
+                    userObject={userObject}
+                    isOverflowing={isOverflowing}
+                />
                 </div>
             </div>
-            <button style={buttonStyle} onClick={generatePDF}>
+            <button style={buttonStyle}
+                onClick={generatePDF}
+                disabled={isOverflowing}>
                 Download as PDF
             </button>
         </div>

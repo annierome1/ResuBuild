@@ -2,9 +2,9 @@
 
 .resume-container {
     width: 816px; /* 8.5 inches */
-    height: 1056px; /* 11 inches */
+    height: 1056px !important; /* 11 inches */
     margin: 0 auto; 
-    padding: 20px;
+    padding: 10px;
     background-color: white;
     color: black; 
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -13,8 +13,8 @@
 
 @media print {
     .resume-preview {
-        width: 100%;
-        height: auto;
+        width: 816px;
+        height: 1056px;
         margin: 0;
         box-shadow: none;
     }

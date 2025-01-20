@@ -15,6 +15,7 @@ const Step2 = ({
 }) => {
     const [suggestions, setSuggestions] = useState({});
     const [showSuggestions, setShowSuggestions] = useState({});
+    
 
     // Fetch AI suggestions based on job title
     const getSuggestions = async (title, index) => {
@@ -170,7 +171,7 @@ const Step2 = ({
                     {/* Add/Remove Experience Buttons */}
                     <div className="button-group">
                         <button type='button' className='add-description' onClick={() => addDescription(index)}>Add Description</button>
-                        <button type='button' className='rbutton' onClick={() => removeExperience(index)}>Remove Experience</button>
+                        <button type='button' className='rExpbutton' onClick={() => removeExperience(index)}>Remove Experience</button>
                     </div>
                 </div>
             ))}
