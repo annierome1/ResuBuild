@@ -14,7 +14,7 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const bcrypt = require('bcryptjs');
+
 
 const app = express();
 app.use(express.json());
@@ -196,15 +196,15 @@ app.get('/api/get-resumes', authenticate, async (req, res) => {
 });
 
 // Serve static files from the frontend build folder
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '../resume-builder', 'build')));
 
 // Handle all other routes by serving the frontend's index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build/index.html'));
+  res.sendFile(path.join(__dirname, '../resume-builder', 'build', 'index.html'));
 });
 
 // Start the server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
