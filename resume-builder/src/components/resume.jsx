@@ -107,10 +107,29 @@ const ResumeForm = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Clear token
+        // Clear local storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userObject'); // Clear saved resume data
+    
+        // Reset state
         setUserToken(null);
+        setUsername(null);
+        setUserObject({
+            experience: [
+                { title: '', company: '', startDate: null, endDate: null, location: '', description: [''], currentlyWorking: false }
+            ],
+            gradDate: null,
+            extracurriculars: [],
+            gpaEntries: [],
+            skills: [],
+            certifications: [],
+            interests: []
+        });
+    
         alert('You are now logged out!');
     };
+    
 
     
 
