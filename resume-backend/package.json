@@ -9,7 +9,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node resume-backend/index.js",
     "heroku-postbuild": "cd ../resume-builder && npm install && npm run build && cd ../resume-backend"
   },
   "keywords": [],
