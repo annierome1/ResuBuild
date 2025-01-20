@@ -487,18 +487,19 @@ const ResumeForm = () => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'stretch',
-        height: '100%',
-        width: '100%', 
+        height: '1056px',
+        width: '816px', 
         flexGrow: 1,
     };
 
     const formContainerStyle = {
         padding: '20px',
+        maxWidth: "40%",
         border: '1px solid #ddd',
         borderRadius: '5px',
         backgroundColor: '#d7dbd8',
         flex: 1, 
-        height: '1056',
+        height: '100%',
         boxSizing: 'border-box',
         overflowY: 'auto', 
     };
