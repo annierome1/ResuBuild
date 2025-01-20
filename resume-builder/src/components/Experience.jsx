@@ -20,7 +20,7 @@ const Step2 = ({
     // Fetch AI suggestions based on job title
     const getSuggestions = async (title, index) => {
         if (!title) return;
-
+    
         try {
             const response = await fetch('/api/generate-description', {
                 method: 'POST',
@@ -29,29 +29,53 @@ const Step2 = ({
                 },
                 body: JSON.stringify({ title }), // Send the job title to the backend
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
-
-                
-                const splitSuggestions = data.suggestions[0]
-                    .split(/(\d\.\s)/)  // Split on numbers like "1. ", "2. ", "3. "
-                    .filter(text => text.trim() && !/^\d\.\s/.test(text));  // Remove empty elements and numbers
-
-                const newSuggestions = { ...suggestions, [index]: splitSuggestions };
-                setSuggestions(newSuggestions);
-
-                // Show suggestions for the relevant experience index
-                const updatedShowSuggestions = { ...showSuggestions, [index]: true };
-                setShowSuggestions(updatedShowSuggestions);
-
+    
+                // Validate the response format
+                if (data?.suggestions && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+                    const splitSuggestions = data.suggestions[0]
+                        .split(/(\d\.\s)/) // Split on numbers like "1. ", "2. ", "3. "
+                        .filter(text => text.trim() && !/^\d\.\s/.test(text)); // Remove empty elements and numbers
+    
+                    // Safely update the suggestions state
+                    setSuggestions((prevSuggestions) => ({
+                        ...prevSuggestions,
+                        [index]: splitSuggestions, // Assign the suggestions array to the correct index
+                    }));
+    
+                    // Show the suggestions for the relevant experience index
+                    setShowSuggestions((prevShowSuggestions) => ({
+                        ...prevShowSuggestions,
+                        [index]: true,
+                    }));
+                } else {
+                    console.error('Invalid suggestions format or empty suggestions array:', data);
+                    // Ensure index is initialized with an empty array in case of invalid or missing data
+                    setSuggestions((prevSuggestions) => ({
+                        ...prevSuggestions,
+                        [index]: [],
+                    }));
+                }
             } else {
-                console.error('Error fetching suggestions');
+                console.error('Error fetching suggestions:', response.statusText);
+                // Ensure index is initialized with an empty array in case of error
+                setSuggestions((prevSuggestions) => ({
+                    ...prevSuggestions,
+                    [index]: [],
+                }));
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error fetching suggestions:', error);
+            // Ensure index is initialized with an empty array in case of error
+            setSuggestions((prevSuggestions) => ({
+                ...prevSuggestions,
+                [index]: [],
+            }));
         }
     };
+    
 
     // Update string for start and end dates
     const updateDatesString = (exp) => {
@@ -156,17 +180,26 @@ const Step2 = ({
                         <div className='suggestions-box'>
                             <button type="button" className="close-button" onClick={() => setShowSuggestions({ ...showSuggestions, [index]: false })}>X</button>
                             <h4>Suggested Descriptions:</h4>
-                            {suggestions[index].map((suggestion, i) => (
-                                <p key={i}>{suggestion.trim()}</p>
-                            ))}
-                            {/* Refresh Suggestions */}
-                            <button type='button' onClick={() => getSuggestions(exp.title, index)}>Refresh Suggestions</button>
-                        </div>
-                    ) : (
-                        <button type='button' onClick={() => setShowSuggestions({ ...showSuggestions, [index]: true })}>
-                            Show Suggestions
-                        </button>
-                    )}
+                                {Array.isArray(suggestions[index]) ? (
+                                    suggestions[index].map((suggestion, i) => (
+                                        <p key={i}>{suggestion.trim()}</p>
+                                    ))
+                                ) : (
+                                    <p>No suggestions available</p> // Fallback if suggestions are not available
+                                )}
+                                {/* Refresh Suggestions */}
+                                <button type="button" onClick={() => getSuggestions(exp.title, index)}>
+                                    Refresh Suggestions
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => setShowSuggestions({ ...showSuggestions, [index]: true })}
+                            >
+                                Show Suggestions
+                            </button>
+                        )}
 
                     {/* Add/Remove Experience Buttons */}
                     <div className="button-group">
