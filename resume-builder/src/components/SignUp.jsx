@@ -7,19 +7,17 @@ const SignUp = ({ onSignUpSuccess }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (password !== confirmPassword) {
             setErrorMessage('Passwords do not match');
             return;
         }
-    
+
         try {
-            console.log('Sending sign-up request...');
-    
-            // Make the API request
+            console.log('🚀 Sending sign-up request...');
+
             const response = await fetch('/api/signup', {
                 method: 'POST',
                 headers: {
@@ -27,36 +25,59 @@ const SignUp = ({ onSignUpSuccess }) => {
                 },
                 body: JSON.stringify({ username, password }),
             });
-    
-            console.log('Response received:', response);
-    
-            // Parse the response
+
+            console.log('📨 Response received:', response);
+
             const data = await response.json();
-    
+
             if (response.ok) {
-                console.log('Sign-up successful:', data);
-    
-                // Set success message and clear any error
+                console.log('✅ Sign-up successful:', data);
+
                 setErrorMessage('');
-                setSuccessMessage('Account created successfully! You can now log in.');
-    
-                // Call the success callback
-                onSignUpSuccess();
+                setSuccessMessage('Account created successfully! Logging you in...');
+
+                // Automatically log in the user after sign-up
+                await loginUserAfterSignup(username, password);
             } else {
-                console.error('Sign-up failed:', data);
-    
-                // Display error message from the backend
+                console.error('❌ Sign-up failed:', data);
                 setErrorMessage(data.error || 'Failed to create account.');
             }
         } catch (error) {
-            console.error('Error during sign-up:', error);
-    
-            // Display a generic error message for network issues
-            
+            console.error('❌ Error during sign-up:', error);
             setErrorMessage('An error occurred. Please try again.');
         }
     };
-    
+
+    // Function to log the user in immediately after signing up
+    const loginUserAfterSignup = async (username, password) => {
+        try {
+            console.log('🔑 Attempting to log in automatically...');
+
+            const loginResponse = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const loginData = await loginResponse.json();
+
+            if (loginResponse.ok) {
+                console.log('✅ Auto-login successful:', loginData);
+                
+                // Call the success callback with token & username
+                onSignUpSuccess(loginData.token, username);
+            } else {
+                console.error('❌ Auto-login failed:', loginData);
+                setErrorMessage('Sign-up successful, but auto-login failed. Please log in manually.');
+            }
+        } catch (error) {
+            console.error('❌ Error during auto-login:', error);
+            setErrorMessage('Sign-up successful, but auto-login failed. Please log in manually.');
+        }
+    };
+
     return (
         <div>
             <h2>Sign Up</h2>

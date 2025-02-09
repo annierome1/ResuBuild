@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import './ResumePrev.css';
 
-// Use React.forwardRef to forward the ref properly
+
 const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
     // Function to check for overflow
     const checkContentOverflow = () => {
         if (!ref?.current) return;
 
         const resumeContainer = ref.current;
-        const containerHeight = resumeContainer.offsetHeight; // Defined height (1056px)
-        const contentHeight = resumeContainer.scrollHeight; // Actual content height
+        const containerHeight = resumeContainer.offsetHeight; 
+        const contentHeight = resumeContainer.scrollHeight; 
 
         console.log({ containerHeight, contentHeight });
     };
@@ -22,7 +22,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
     const sortedExperiences = [...userObject.experience].sort((a, b) => {
         const dateA = a.startDate ? new Date(a.startDate) : new Date(0); // Treat null dates as earliest
         const dateB = b.startDate ? new Date(b.startDate) : new Date(0);
-        return dateB - dateA; // Descending order
+        return dateB - dateA; //Descending order
     });
 
     return (
@@ -30,10 +30,21 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
          <div ref ={ref} className='resume-container'>
             <div className='header'>
                 <h1>{userObject.firstName} {userObject.lastName}</h1>
+                {userObject.statement && <p className='statement'>{userObject.statement}</p>}
                 <div className='contact'>
                     <p>{userObject.email}</p>
                     <p>{userObject.phone}</p>
-                    <p>{userObject.website}</p>
+                        <p>
+                            <a
+                            href={userObject.website.startsWith("http") ? userObject.website : 'https://${userObject.website}'}
+                            target ="_blank"
+                            rel="noopener noreferrer"
+                            className="website-link"
+                            >
+                                {userObject.website}
+                            </a>
+                        </p>
+                    
                     <p>{userObject.location}</p>
                 </div>
             </div>
@@ -57,6 +68,38 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
                     </div>
                 ))}
             </div>
+            
+            {/* Projects Section */}
+            {userObject.projects && userObject.projects.length > 0 && (
+                <div className="section">
+                    <h2>Projects</h2>
+                    {userObject.projects.map((project, index) => (
+                        <div key={index} className="project-item">
+                            <div className="project-header">
+                                <h3 className="project-title">{project.title}</h3>
+                                {project.link && (
+                                    <div className="project-link">
+                                        <a href={project.link} target="_blank" rel="noopener noreferrer">
+                                            View Project
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                            <ul className="project-description">
+                                {Array.isArray(project.description) && project.description.length > 0 ? (
+                                    project.description.map((desc, descIndex) => (
+                                        <li key={descIndex}>{desc}</li>
+                                    ))
+                                ) : (
+                                    <li>No description available</li>
+                                )}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            
             <div className='section'>
             <h2>Education</h2>
                 <div className='education-item'>

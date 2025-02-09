@@ -7,7 +7,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
-import Users from './models/User.js';
+import User from './models/User.js';
+import Resume from './models/Resume.js'
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -27,13 +29,8 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// User model
-const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    resumes: [{ type: mongoose.Schema.Types.Mixed }], // To store user's resumes
-});
-const User = mongoose.model('Users', userSchema);
+const router = express.Router();
+
 
 // Authentication middleware
 const authenticate = (req, res, next) => {
@@ -72,7 +69,7 @@ app.post('/api/generate-description', async (req, res) => {
                 messages: [
                     {
                         role: "system",
-                        content: "You are helping fill in a resume, generate one sentence descriptions based on the job the user has worked.",
+                        content: "You are helping fill in a resume, generate one sentence, presice descriptions based on the job the user has worked.",
                     },
                     {
                         role: "user",
@@ -108,7 +105,7 @@ app.post('/api/generate-description', async (req, res) => {
 app.post('/api/signup', async (req, res) => {
     const { username, password } = req.body;
 
-    console.log('Signup request received:', req.body); // Log incoming request
+    console.log('Signup request received:', req.body); 
 
     if (!username || !password) {
         console.log('Validation failed: Missing username or password');
@@ -154,47 +151,79 @@ app.post('/api/login', async (req, res) => {
         if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
+
+
+        res.json({ token, username: user.username }); // Ensure username is included
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Error during login' });
     }
 });
 
-// Save resume
-app.post('/api/save-resume', authenticate, async (req, res) => {
-    const { resumeData } = req.body;
 
-    if (!resumeData) {
-        return res.status(400).json({ error: 'Resume data is required' });
+
+app.post('/api/resume/save', async (req, res) => {
+    let { username, resumeName, userObject } = req.body;
+    if (!username || !resumeName) {
+        return res.status(400).json({ error: "Username and resume name are required" });
+    }
+
+    resumeName = resumeName.trim();
+
+    if (!resumeName) {
+        return res.status(400).json({ error: "Resume name cannot be empty" });
     }
 
     try {
-        const user = await User.findById(req.userId);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        const existingResume = await Resume.findOne({ username, resumeName });
 
-        user.resumes.push(resumeData);
-        await user.save();
-        res.status(200).json({ message: 'Resume saved successfully' });
+        if (existingResume) {
+            existingResume.userObject = userObject;
+            await existingResume.save();
+            return res.status(200).json({ message: "Resume updated successfully" });
+        } else {
+            const newResume = new Resume({ username, resumeName, userObject });
+            await newResume.save();
+            return res.status(201).json({ message: "Resume saved successfully" });
+        }
     } catch (error) {
-        console.error('Error saving resume:', error);
-        res.status(500).json({ error: 'Error saving resume' });
+        console.error("Error saving resume:", error);
+        res.status(500).json({ error: "Error saving resume", details: error.message });
     }
 });
 
-// Retrieve resumes
-app.get('/api/get-resumes', authenticate, async (req, res) => {
+
+
+
+
+// Get List of Resumes for a User
+app.get('/api/resume/list', async (req, res) => {
+    const { username } = req.query;
+
     try {
-        const user = await User.findById(req.userId);
-        if (!user) return res.status(404).json({ error: 'User not found' });
-
-        res.json({ resumes: user.resumes });
+        const resumes = await Resume.find({ username }).select("resumeName");
+        res.status(200).json(resumes);
     } catch (error) {
-        console.error('Error retrieving resumes:', error);
-        res.status(500).json({ error: 'Error retrieving resumes' });
+        res.status(500).json({ error: "Error fetching resumes" });
     }
 });
 
+// 🔹 Load a Specific Resume by Name
+app.get('/api/resume/load', async (req, res) => {
+    const { username, resumeName } = req.query;
+
+    try {
+        const resume = await Resume.findOne({ username, resumeName });
+
+        if (!resume) {
+            return res.status(404).json({ error: "Resume not found" });
+        }
+
+        res.status(200).json(resume);
+    } catch (error) {
+        res.status(500).json({ error: "Error loading resume" });
+    }
+});
 // Serve static files from the frontend build folder
 app.use(express.static(path.join(__dirname, '../resume-builder', 'build')));
 

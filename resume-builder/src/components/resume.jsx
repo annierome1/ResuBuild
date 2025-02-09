@@ -3,6 +3,7 @@ import Step1 from './Personal';
 import Step2 from './Experience';
 import Step3 from './Education';
 import Step4 from './Skills';
+import Step5 from './Projects';
 import ResumePreview from './ResumePrev';
 import StepNavigation from './Nav';
 import jsPDF from 'jspdf';
@@ -16,19 +17,28 @@ console.log('Login:', Login);
 const ResumeForm = () => {
     const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);
-    const [isSigningUp, setIsSigningUp] = useState(false);
+    const [resumeList, setResumeList] = useState([]);
+    const [selectedResume, setSelectedResume] = useState([""]);
     const [userObject, setUserObject] = useState(() => {
         const savedData = localStorage.getItem('userObject');
-        return savedData ? JSON.parse(savedData): {
-        experience: [{ title: '', company: '', startDate: null, endDate: null, location: '', description: [''], currentlyWorking: false }],
-        gradDate: null,
-        extracurriculars: [],
-        gpaEntries: [],
-        skills: [],
-        certifications: [],
-        interests: []
+        return savedData ? JSON.parse(savedData) : {
+            username: localStorage.getItem('username') || "",
+            resumeName: "",
+            experience: [{ title: '', company: '', startDate: null, endDate: null, location: '', description: [''], currentlyWorking: false }],
+            projects: [{ title: '', description: [''], company: '' }],
+            gradDate: null,
+            extracurriculars: [],
+            statement: "",
+            gpaEntries: [],
+            skills: [],
+            certifications: [],
+            interests: [],
+            courses: [],
         };
     });
+
+
+
     
     const [currentStep, setCurrentStep] = useState(1);
     const resumeRef = useRef();
@@ -46,65 +56,108 @@ const ResumeForm = () => {
         localStorage.setItem('userObject', JSON.stringify(userObject));
     }, [userObject]);
 
+    useEffect(() =>{
+        if (userToken && username){
+            fetchResumeList(userToken);
+        }
+    }, [userToken, username]);
+
     // Save progress to backend
     const saveToBackend = async (token) => {
         if (!token) {
             alert('Please log in to save your progress.');
             return;
         }
-
+    
+        const trimmedResumeName = userObject.resumeName?.trim() || "";
+        if (!trimmedResumeName) {
+            alert('Please enter a valid resume name before saving.');
+            return;
+        }
+    
+        // Check if username is available
+        if (!username) {
+            alert("Error: Username is missing. Please log in again.");
+            return;
+        }
+    
         try {
-            const response = await fetch('/api/save-resume', {
+            const requestBody = {
+                username,
+                resumeName: trimmedResumeName,
+                userObject,
+            };
+    
+            const response = await fetch('/api/resume/save', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ resumeData: userObject }),
+                body: JSON.stringify(requestBody),
             });
-
+            const responseData = await response.json();
             if (response.ok) {
-                alert('Progress saved to your account!');
+                alert('Resume saved successfully!');
             } else {
-                alert('Failed to save progress.');
+                alert(`Failed to save resume: ${responseData.error || "Unknown error"}`);
             }
         } catch (error) {
-            console.error('Error saving progress:', error);
+            console.error('Error saving resume:', error);
+        }
+    };
+    
+    
+    
+    
+    const fetchResumeList = async (token) => {
+        if (!token) return;
+
+        try {
+            const response = await fetch(`/api/resume/list?username=${username}`, {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.length > 0) {
+                setResumeList(data);
+            } else {
+                setResumeList([]);
+            }
+        } catch (error) {
+            console.error("Error fetching resumes:", error);
         }
     };
 
-    // Load progress from backend
-    const loadFromBackend = async (token) => {
-        if (!token) {
-            alert('Please log in to load your progress.');
+    // Load the selected resume
+    const loadSelectedResume = async () => {
+        if (!userToken || !selectedResume) {
+            alert("Please select a resume to load.");
             return;
         }
 
         try {
-            const response = await fetch('/api/get-resumes', {
+            const response = await fetch(`/api/resume/load?username=${username}&resumeName=${selectedResume}`, {
                 method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${userToken}` },
             });
 
+            const data = await response.json();
             if (response.ok) {
-                const data = await response.json();
-                if (data && data.resumes && data.resumes[0]) {
-                    setUserObject(data.resumes[0]);
-                }
+                setUserObject(data.userObject);
+                alert(`Resume "${selectedResume}" loaded successfully!`);
             } else {
-                alert('Failed to load progress.');
+                alert("Failed to load resume.");
             }
         } catch (error) {
-            console.error('Error loading progress:', error);
+            console.error("Error loading resume:", error);
         }
     };
+    
+    
 
-    const handleLogin = (token) => {
-        setUserToken(token); // Update state
-        alert('You are now logged in!');
-    };
 
     const handleLogout = () => {
         // Clear local storage
@@ -131,31 +184,33 @@ const ResumeForm = () => {
     };
     
 
+    const createNewResume = () => {
     
-
-    const handleSignUp = async (username, password) => {
-        try {
-            const response = await fetch('/api/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (response.ok) {
-                alert('Sign-up successful! Please log in.');
-                setIsSigningUp(false); // Redirect to login
-            } else {
-                const data = await response.json();
-                alert(data.error || 'Failed to sign up.');
-            }
-        } catch (error) {
-            console.error('Error during sign-up:', error);
-            alert('An error occurred. Please try again.');
-        }
+        const blankResume = {
+            resumeName: "",
+            experience: [{ title: '', company: '', startDate: null, endDate: null, location: '', description: [''], currentlyWorking: false }],
+            projects: [{ title: '', description: [''], company: '' }],
+            gradDate: null,
+            extracurriculars: [],
+            statement: "",
+            gpaEntries: [],
+            skills: [],
+            certifications: [],
+            interests: []
+        };
+    
+        setUserObject((prevState) => {
+            return { ...blankResume }; 
+        });
+    
+        setSelectedResume(""); 
+        localStorage.removeItem("userObject"); 
+    
+        alert("New resume created! You can start fresh.");
     };
-
+    
+    
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -182,6 +237,68 @@ const ResumeForm = () => {
         newExperience[expIndex].description[descIndex] = value;
         setUserObject(prevState => ({ ...prevState, experience: newExperience }));
     };
+    
+    const handleProjectChange = (index, key, value) => {
+        setUserObject(prevState => {
+            const newProjects = [...prevState.projects];
+    
+            if (key.startsWith('description')) {
+                const descIndex = key.split('[')[1].split(']')[0]; // Extract index from 'description[0]'
+                newProjects[index].description = newProjects[index].description || []; // Ensure it's an array
+                newProjects[index].description[descIndex] = value;
+            } else {
+                newProjects[index] = { ...newProjects[index], [key]: value };
+            }
+    
+            return { ...prevState, projects: newProjects };
+        });
+    };
+    
+    const handleProjectDescriptionChange = (projIndex, descIndex, value) => {
+        const newProjects = [...userObject.projects];
+        newProjects[projIndex].description[descIndex] = value;
+        setUserObject(prevState => ({ ...prevState, projects: newProjects }));
+    };
+    
+    const addProject = () => {
+        setUserObject(prevState => ({
+            ...prevState,
+            projects: [
+                ...prevState.projects,
+                { title: '', description: [], technologies: '', link: '' } // Ensure description is an array
+            ]
+        }));
+    };
+    
+    const removeProject = (projIndex) => {
+        setUserObject(prevState => ({
+            ...prevState,
+            projects: prevState.projects.filter((_, index) => index !== projIndex)
+        }));
+    };
+    
+    const addProjectDescription = (projIndex) => {
+        setUserObject(prevState => {
+            const newProjects = [...prevState.projects];
+            newProjects[projIndex].description = newProjects[projIndex].description || []; // Ensure it's an array
+            newProjects[projIndex].description.push('');
+            return { ...prevState, projects: newProjects };
+        });
+    };
+    
+    
+    const removeProjectDescription = (projIndex, descIndex) => {
+        setUserObject(prevState => {
+            const newProjects = [...prevState.projects];
+            if (Array.isArray(newProjects[projIndex].description)) {
+                newProjects[projIndex].description.splice(descIndex, 1);
+            }
+            return { ...prevState, projects: newProjects };
+        });
+    };
+    
+    
+    
 
     const addExperience = () => {
         setUserObject(prevState => ({
@@ -288,9 +405,9 @@ const ResumeForm = () => {
     };
 
     const addCourse = () => {
-        setUserObject(prevState => ({
+        setUserObject((prevState) => ({
             ...prevState,
-            courses: [...prevState.courses, '']
+            courses: prevState.courses ? [...prevState.courses, ""] : [""] // ✅ Ensure courses exists
         }));
     };
 
@@ -337,7 +454,7 @@ const ResumeForm = () => {
         });
     
         // Adjust threshold if necessary
-        const containerHeight = 1002; // Use observed threshold for overflow
+        const containerHeight = 1002; 
         console.log({
             containerHeight,
             totalContentHeight,
@@ -356,7 +473,7 @@ const ResumeForm = () => {
 
     useEffect(() => {
         // Check overflow initially
-        console.log("Mutation detected");
+        console.log("Overflow");
         checkContentOverflow();
 
         // Set up a MutationObserver for real-time detection
@@ -531,41 +648,97 @@ const ResumeForm = () => {
                 }}
             >
                 <h1>Resume Builder</h1>
-                {username ? (
-                    <span style={{ marginRight: "15px" }}></span>
-                ) : (
-                    userToken && <span style={{ marginRight: "15px" }}></span>
+    
+                {/* Show the username if logged in */}
+                {userToken && username && (
+                    <span style={{ marginRight: "15px" }}>Welcome, {username}!</span>
                 )}
+    
                 {userToken ? (
                     <>
+                        {/* Logout Button */}
                         <button onClick={handleLogout} style={{ marginRight: "10px" }}>
                             Logout
                         </button>
-                        <button
-                            onClick={() => saveToBackend(userToken)}
-                            style={{ marginRight: "10px" }}
-                        >
+    
+                        {/* Save Resume Button */}
+                        <button onClick={() => saveToBackend(userToken)} style={{ marginRight: "10px" }}>
                             Save Progress
                         </button>
-                        <button onClick={() => loadFromBackend(userToken)}>
-                            Load Progress
+
+                        {/* New Resume */}
+                        <button 
+                            onClick = {createNewResume}
+                            style = {{
+                                marginRight: "10px",
+                                padding: "5px 10px",
+                                backgroundColor: "#28a745",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                            }}
+                            >
+                                New Resume
                         </button>
+                            
+
+
+    
+                        {/* Auto-loaded Resume Selection Dropdown */}
+                        {resumeList.length > 0 ? (
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <select
+                                    onChange={(e) => setSelectedResume(e.target.value)}
+                                    style={{ marginLeft: "10px", padding: "5px" }}
+                                    value={selectedResume || ""}
+                                >
+                                    <option value="">Select a resume to load</option>
+                                    {resumeList.map((resume) => (
+                                        <option key={resume._id} value={resume.resumeName}>
+                                            {resume.resumeName}
+                                        </option>
+                                    ))}
+                                </select>
+    
+                                {/* Load Selected Resume Button */}
+                                <button
+                                    onClick={loadSelectedResume}
+                                    style={{
+                                        marginLeft: "10px",
+                                        padding: "5px 10px",
+                                        backgroundColor: "#007bff",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                    }}
+                                    disabled={!selectedResume} // Disable if no resume selected
+                                >
+                                    Load Selected Resume
+                                </button>
+                            </div>
+                        ) : (
+                            <span style={{ marginLeft: "10px" }}>No saved resumes</span>
+                        )}
                     </>
                 ) : (
-                    <button
-                        onClick={() => navigate("/login")}
-                        style={{
-                            backgroundColor: "blue",
-                            color: "white",
-                            border: "none",
-                            padding: "10px 15px",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Login / Sign Up
-                    </button>
-                )}
+                        <button
+                            onClick={() => navigate("/login")}
+                            style={{
+                                backgroundColor: "blue",
+                                color: "white",
+                                border: "none",
+                                padding: "10px 15px",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Login / Sign Up
+                        </button>
+                    )}
+
+
                 <button onClick={openModal} style={{ marginLeft: "10px" }}>
                     About
                 </button>
@@ -630,9 +803,21 @@ const ResumeForm = () => {
                             removeCourse={removeCourse}
                         />
                     )}
+                    {currentStep === 5 && (
+                        <Step5
+                            userObject={userObject}
+                            handleProjectChange={handleProjectChange}
+                            addProject={addProject}
+                            removeProject={removeProject}
+                            addProjectDescription={addProjectDescription}
+                            removeProjectDescription={removeProjectDescription}
+                            handleProjectDescriptionChange={handleProjectDescriptionChange}
+                        />
+                    )}
+
                     <StepNavigation
                         currentStep={currentStep}
-                        totalSteps={4}
+                        totalSteps={5}
                         nextStep={nextStep}
                         prevStep={prevStep}
                     />

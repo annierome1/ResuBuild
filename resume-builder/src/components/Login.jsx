@@ -23,7 +23,7 @@ const Login = ({ onLogin }) => {
 
             if (response.ok) {
                 localStorage.setItem('token', data.token); // Save token to localStorage
-                onLogin(data.token); 
+                onLogin(data.token, data.username); 
                 setErrorMessage('');
                 navigate('/');
             } else {
