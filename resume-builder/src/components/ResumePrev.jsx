@@ -34,17 +34,21 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
                 <div className='contact'>
                     <p>{userObject.email}</p>
                     <p>{userObject.phone}</p>
+                    {userObject.website && (
                         <p>
                             <a
-                            href={userObject.website.startsWith("http") ? userObject.website : 'https://${userObject.website}'}
-                            target ="_blank"
-                            rel="noopener noreferrer"
-                            className="website-link"
+                                href={userObject.website.startsWith("http") 
+                                    ? userObject.website 
+                                    : `https://${userObject.website}`} // ✅ Corrected template string usage
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="website-link"
                             >
                                 {userObject.website}
                             </a>
                         </p>
-                    
+                    )}
+                                        
                     <p>{userObject.location}</p>
                 </div>
             </div>
