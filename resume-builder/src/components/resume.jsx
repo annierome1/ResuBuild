@@ -650,9 +650,9 @@ const ResumeForm = () => {
                 <h1>Resume Builder</h1>
     
                 {/* Show the username if logged in */}
-                {userToken && username && (
-                    <span style={{ marginRight: "15px" }}>Welcome, {username}!</span>
-                )}
+                <span style={{ marginRight: "15px" }}>
+                    {userToken && username ? `Welcome, ${username}!` : "Welcome!"}
+                </span>
     
                 {userToken ? (
                     <>
