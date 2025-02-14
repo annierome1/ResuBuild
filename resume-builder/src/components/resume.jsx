@@ -18,11 +18,11 @@ const ResumeForm = () => {
     const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);
     const [resumeList, setResumeList] = useState([]);
-    const [selectedResume, setSelectedResume] = useState([""]);
+    const [selectedResume, setSelectedResume] = useState("");
     const [userObject, setUserObject] = useState(() => {
         const savedData = localStorage.getItem('userObject');
         return savedData ? JSON.parse(savedData) : {
-            username: localStorage.getItem('username') || "",
+            username: username || "",
             resumeName: "",
             experience: [{ title: '', company: '', startDate: null, endDate: null, location: '', description: [''], currentlyWorking: false }],
             projects: [{ title: '', description: [''], company: '' }],
@@ -44,6 +44,9 @@ const ResumeForm = () => {
     const resumeRef = useRef();
     const [isOverflowing, setIsOverflowing] = useState(false);
     const navigate = useNavigate();
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+    
 
     
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -595,6 +598,19 @@ const ResumeForm = () => {
         cursor: "pointer",
     };
     
+    const dropdownButtonStyle = {
+        width: "100%",
+        padding: "10px",
+        backgroundColor: "#cbcbcb",
+        border: "none",
+        borderRadius: "5px",
+        textAlign: "center",
+        cursor: "pointer",
+        fontSize: "14px",
+        fontWeight: "bold",
+        marginBottom: "5px",
+        transition: "background 0.2s ease",
+    };
     
     
     
@@ -648,49 +664,87 @@ const ResumeForm = () => {
                 }}
             >
                 <h1>Resume Builder</h1>
-    
-                {/* Show the username if logged in */}
+
                 <span style={{ marginRight: "15px" }}>
                     {userToken && username ? `Welcome, ${username}!` : "Welcome!"}
                 </span>
-    
+
                 {userToken ? (
                     <>
-                        {/* Logout Button */}
-                        <button onClick={handleLogout} style={{ marginRight: "10px" }}>
-                            Logout
-                        </button>
-    
-                        {/* Save Resume Button */}
-                        <button onClick={() => saveToBackend(userToken)} style={{ marginRight: "10px" }}>
-                            Save Progress
-                        </button>
-
-                        {/* New Resume */}
-                        <button 
-                            onClick = {createNewResume}
-                            style = {{
-                                marginRight: "10px",
-                                padding: "5px 10px",
-                                backgroundColor: "#28a745",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "5px",
-                                cursor: "pointer",
-                            }}
+                        {/* Dropdown Menu */}
+                        <div style={{ position: "relative" }}>
+                            <button
+                                style={{
+                                    backgroundColor: "#007bff",
+                                    color: "white",
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                    border: "none",
+                                    fontSize: "16px",
+                                    fontWeight: "bold",
+                                    transition: "background 0.3s ease",
+                                }}
+                                onClick={() => setDropdownOpen(!isDropdownOpen)}
                             >
-                                New Resume
-                        </button>
-                            
+                                Actions ▼
+                            </button>
 
+                            {isDropdownOpen && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "45px",
+                                        right: "0",
+                                        backgroundColor: "white",
+                                        borderRadius: "10px",
+                                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                                        zIndex: 1000,
+                                        padding: "10px",
+                                        width: "200px",
+                                    }}
+                                >
+                                    <button
+                                        onClick={() => saveToBackend(userToken)}
+                                        style={dropdownButtonStyle}
+                                    >
+                                        Save Progress
+                                    </button>
+                                    <button
+                                        onClick={createNewResume}
+                                        style={{ ...dropdownButtonStyle, backgroundColor: "#28a745" }}
+                                    >
+                                        New Resume
+                                    </button>
+                                    <button
+                                        onClick={() => navigate("/cover-letter")}
+                                        style={dropdownButtonStyle}
+                                    >
+                                        Generate Cover Letter
+                                    </button>
+                                    <button
+                                        onClick={handleLogout}
+                                        style={{
+                                            ...dropdownButtonStyle,
+                                            backgroundColor: "#dc3545",
+                                            color: "white",
+                                        }}
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
-    
-                        {/* Auto-loaded Resume Selection Dropdown */}
+                        {/* Resume Selection Dropdown */}
                         {resumeList.length > 0 ? (
-                            <div style={{ display: "flex", alignItems: "center" }}>
+                            <div style={{ display: "flex", alignItems: "center", marginLeft: "10px" }}>
                                 <select
                                     onChange={(e) => setSelectedResume(e.target.value)}
-                                    style={{ marginLeft: "10px", padding: "5px" }}
+                                    style={{
+                                        padding: "8px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                    }}
                                     value={selectedResume || ""}
                                 >
                                     <option value="">Select a resume to load</option>
@@ -700,22 +754,21 @@ const ResumeForm = () => {
                                         </option>
                                     ))}
                                 </select>
-    
-                                {/* Load Selected Resume Button */}
+
                                 <button
                                     onClick={loadSelectedResume}
                                     style={{
                                         marginLeft: "10px",
-                                        padding: "5px 10px",
+                                        padding: "8px 12px",
                                         backgroundColor: "#007bff",
                                         color: "white",
                                         border: "none",
                                         borderRadius: "5px",
                                         cursor: "pointer",
                                     }}
-                                    disabled={!selectedResume} // Disable if no resume selected
+                                    disabled={!selectedResume}
                                 >
-                                    Load Selected Resume
+                                    Load Resume
                                 </button>
                             </div>
                         ) : (
@@ -723,33 +776,41 @@ const ResumeForm = () => {
                         )}
                     </>
                 ) : (
-                        <button
-                            onClick={() => navigate("/login")}
-                            style={{
-                                backgroundColor: "blue",
-                                color: "white",
-                                border: "none",
-                                padding: "10px 15px",
-                                borderRadius: "5px",
-                                cursor: "pointer",
-                            }}
-                        >
-                            Login / Sign Up
-                        </button>
-                    )}
-
+                    <button
+                        onClick={() => navigate("/login")}
+                        style={{
+                            backgroundColor: "blue",
+                            color: "white",
+                            border: "none",
+                            padding: "10px 15px",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Login / Sign Up
+                    </button>
+                )}
 
                 <button onClick={openModal} style={{ marginLeft: "10px" }}>
                     About
                 </button>
             </header>
 
+            {/* Modal */}
             {isModalOpen && (
                 <div style={modalOverlayStyle}>
                     <div style={modalContentStyle}>
                         <h2>About the app</h2>
-                        <p>This dynamic, one-page resume builder is designed with simplicity in mind—just what many employers are looking for today. Create and preview your resume in real-time! Add experience items effortlessly by using the "Show Suggestions" button, powered by OpenAI's API, to generate tailored descriptions for your job title. Want to save your progress? Simply sign up and click "Save Progress" to pick up right where you left off </p>
-                        <p>Developed by {""}
+                        <p>
+                            This dynamic, one-page resume builder is designed with simplicity in mind—just what many employers are looking for today. 
+                            Create and preview your resume in real-time! <br /><br /> 
+                            Need a cover letter? Have ChatGPT curate a custom cover letter for you based on the job description and the resume you have created. 
+                            <br /><br /> 
+                            Reach out to me if you find bugs!!
+                        </p>
+
+                        <p>
+                            Developed by{" "}
                             <a href="https://www.anniecaroline.com/" target="_blank" rel="noopener noreferrer">
                                 Annie Rome
                             </a>

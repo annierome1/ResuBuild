@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import ResumeForm from './components/resume';
 import LoginPage from './components/LoginPage';
+import CoverLetterPage from './components/CoverLetterPage';
 
 function App() {
     const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);
-
-    // Ensure username and token are synced with localStorage on component mount
+    const [userObject, setUserObject] = useState({});
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedUsername = localStorage.getItem('username');
@@ -15,8 +15,6 @@ function App() {
         if (storedToken) setUserToken(storedToken);
         if (storedUsername) setUsername(storedUsername);
     }, []);
-
-    // ✅ Handle login and store token/username in state & localStorage
     const handleLogin = (token, username) => {
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
@@ -24,10 +22,9 @@ function App() {
         setUserToken(token);
         setUsername(username);
 
-        console.log('✅ User logged in:', username);
+        console.log('User logged in:', username);
     };
 
-    // ✅ Handle logout and remove token/username from state & localStorage
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
@@ -35,7 +32,7 @@ function App() {
         setUserToken(null);
         setUsername(null);
 
-        console.log('🚪 User logged out');
+        console.log('User logged out');
     };
 
     return (
@@ -47,11 +44,17 @@ function App() {
                         element={
                             <ResumeForm
                                 userToken={userToken}
-                                username={username} // ✅ Pass username to ResumeForm
+                                username={username} 
                                 handleLogout={handleLogout}
                             />
                         }
                     />
+                    
+                    <Route 
+                        path = "/cover-letter"
+                        element = {<CoverLetterPage userToken={userToken} username ={username}/>}
+                    />
+
                     <Route
                         path="/login"
                         element={<LoginPage onLogin={handleLogin} />}

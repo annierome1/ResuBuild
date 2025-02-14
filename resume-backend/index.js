@@ -224,6 +224,95 @@ app.get('/api/resume/load', async (req, res) => {
         res.status(500).json({ error: "Error loading resume" });
     }
 });
+
+app.post("/api/generate-cover-letter", async (req, res) => {
+    const { resumeData, jobDescription } = req.body;
+
+    if (!resumeData || !jobDescription) {
+        return res.status(400).json({ error: "Missing resume data or job description." });
+    }
+
+    const experience = Array.isArray(resumeData.experience) ? resumeData.experience : [];
+    const projects = Array.isArray(resumeData.projects) ? resumeData.projects : [];
+    const  {firstName, lastName, email, phone, city, state, zipCode} = resumeData;
+
+    const formattedResume = `
+    Name: ${firstName || ""} ${lastName || ""}
+    City, State, Zip: ${city || ""}, ${state || ""} ${zipCode || ""}
+    Email: ${email || ""}
+    Phone: ${phone || ""}
+    
+    Experience:
+    ${experience.map(exp => `- **${exp.title}** at *${exp.company}* (${exp.startDate || "N/A"} - ${exp.endDate || "N/A"}) 
+      - Responsibilities: ${exp.description.join("; ")}`).join("\n")}
+
+    Projects:
+    ${projects.map(proj => `- **${proj.title}**: ${proj.description.join("; ")}
+      - Technologies Used: ${proj.technologies || "N/A"}`).join("\n")}
+    `;
+
+        const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                model: "gpt-4o",
+                messages: [
+                    { 
+                        role: "system", 
+                        content: `You are an expert career coach writing tailored cover letters. 
+                        Your goal is to create a compelling, professional, unique, and structured cover letter that matches the user's experience 
+                        with the job they are applying for. Follow these guidelines:
+                        - Make 3 or 4 paragraphs
+                        - Use a confident and professional tone
+                        - Relate experiences and projects to the skills needed in the job description
+                        - Avoid generic phrases like "I am writing to apply..."
+                        - Customize the cover letter to show enthusiasm for the company and role.
+                        `
+                    },
+                    { 
+                        role: "user", 
+                        content: `Here is my resume:\n${formattedResume}\n\nHere is the job description:\n${jobDescription}\n\nGenerate a tailored, structured, and professional cover letter.` 
+                    }
+                ],
+                max_tokens: 600,
+            }),
+        });
+
+        const data = await openAiResponse.json();
+
+        if (data.choices && data.choices[0].message.content) {
+            res.json({ coverLetter: data.choices[0].message.content });
+        } else {
+            res.status(500).json({ error: "AI failed to generate a cover letter." });
+        }
+
+    
+});
+
+app.post("/api/save-cover-letter", async (req, res) => {
+    const { userToken, coverLetter } = req.body;
+
+    if (!userToken || !coverLetter) {
+        return res.status(400).json({ error: "Missing token or cover letter." });
+    }
+
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ error: "User not found." });
+
+        user.coverLetters.push({ content: coverLetter, date: new Date() });
+        await user.save();
+
+        res.json({ message: "Cover letter saved successfully." });
+    } catch (error) {
+        console.error("Error saving cover letter:", error);
+        res.status(500).json({ error: "Failed to save cover letter." });
+    }
+});
+
 // Serve static files from the frontend build folder
 app.use(express.static(path.join(__dirname, '../resume-builder', 'build')));
 
