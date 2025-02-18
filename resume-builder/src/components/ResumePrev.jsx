@@ -56,7 +56,8 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
                 <h2>Work Experience</h2>
                 {sortedExperiences.map((exp, index) => (
                     <div key={index} className='experience-item'>
-                    <div className='company-title'>
+                    <div className='experience-header'>
+                            <div className ="company-title">
                         <h3>{exp.company}</h3>
                         <p className='title'>{exp.title}</p>
                     </div>
@@ -70,6 +71,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
                             {exp.description.map((desc, idx) => <li key={idx}>{desc}</li>)}
                         </ul>
                     </div>
+                </div>
                 ))}
             </div>
             
@@ -106,25 +108,29 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
             
             <div className='section'>
             <h2>Education</h2>
-                <div className='education-item'>
-                    <div className='uni'>
+                <div className="education-item">
+                    <div className="uni">
                         <h3>{userObject.uni}</h3>
-                        <p className='title'>{userObject.degree}</p>
+                        <p className="title">{userObject.degree}</p>
                     </div>
-                    <div className='grad-details'>
-                        <p className='grad-date'>{userObject.gradDate ? new Date(userObject.gradDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : ''}</p>
-                        <p className='city'>{userObject.city}</p>
+                    <div className="grad-details">
+                        <p className="grad-date">
+                            {userObject.gradDate ? new Date(userObject.gradDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : ''}
+                        </p>
+                        <p className="city">{userObject.city}</p>
                     </div>
-                    <ul className='description'>
-                    {userObject.gpaEntries && userObject.gpaEntries.map((gpaEntry, idx) => (
-                            <li key={idx}><strong>GPA:</strong> {gpaEntry}</li>
-                        ))}
-                        {userObject.extracurriculars && userObject.extracurriculars.length > 0 && (
-                            <li><strong>Clubs and Extracurriculars:</strong> {userObject.extracurriculars.join(';  ')}</li>
-                        )}
-                        
-                    </ul>
+                    {(userObject.gpaEntries?.length > 0 || (userObject.extracurriculars && userObject.extracurriculars.length > 0)) && (
+                        <ul className="description">
+                            {userObject.gpaEntries?.map((gpaEntry, idx) => (
+                                <li key={idx}><strong>GPA:</strong> {gpaEntry}</li>
+                            ))}
+                            {userObject.extracurriculars?.length > 0 && (
+                                <li><strong>Clubs and Extracurriculars:</strong> {userObject.extracurriculars.join(';  ')}</li>
+                            )}
+                        </ul>
+                    )}
                 </div>
+
             </div>
             <div className='section'>
                 <h2>Skills & Courses Taken</h2>

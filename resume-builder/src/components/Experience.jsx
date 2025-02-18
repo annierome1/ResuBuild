@@ -162,18 +162,34 @@ const Step2 = ({
 
                     {/* Descriptions Input */}
                     {exp.description.map((desc, descIndex) => (
-                        <div key={descIndex} className='description-item'>
+                        <div 
+                            key={descIndex} 
+                            className='description-item' 
+                            style={{ display: "flex", alignItems: "center", width: "100%", gap: "10px" }} // ✅ Ensures full width
+                        >
                             <InputItem
-                                className='description'
+                                isTextArea={true}
+                                className="description"
                                 onChange={(e) => handleDescriptionChange(index, descIndex, e.target.value)}
                                 label={`Description ${descIndex + 1}`}
-                                placeholder='Enter job description'
+                                placeholder="Enter job description"
                                 name={`description-${index}-${descIndex}`}
                                 value={desc}
+                                style={{ width: "100%", flexGrow: 1 }} 
                             />
-                            <button type='button' className='rbutton' onClick={() => removeDescription(index, descIndex)}>Remove Description</button>
+                            <button 
+                                onClick={() => removeDescription(index, descIndex)}
+                                style={{
+                                    flexShrink: 0,
+                                    whiteSpace: "nowrap",
+                                    padding: "8px 12px",
+                                }}
+                            >
+                                Remove
+                            </button>
                         </div>
                     ))}
+
 
                     {/* Show/Hide AI Suggestions */}
                     {showSuggestions[index] ? (

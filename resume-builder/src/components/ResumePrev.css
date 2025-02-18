@@ -57,14 +57,15 @@
 
 /* Experience Section */
 .experience-item {
-    margin-bottom: 10px;
-    justify-content: space-between;
-    align-items: flex-start;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
 }
 
 .company-title {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
 
 .company-title h3 {
@@ -151,6 +152,8 @@
 .uni .title {
     font-style: italic;
     margin: 0;
+    padding: 0;
+    
 }
 
 .education-item .description {
@@ -158,6 +161,9 @@
     margin: 0;
     padding: 0;
     list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    
 }
 
 /* Skills and Certifications */
@@ -204,6 +210,8 @@
     flex-direction: column;
     align-items: flex-end;
     margin-top: 0;
+    text-align: right;
+    flex-shrink: 0;
 }
 
 .dates-location .dates {

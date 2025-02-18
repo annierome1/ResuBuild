@@ -258,10 +258,13 @@ const ResumeForm = () => {
     };
     
     const handleProjectDescriptionChange = (projIndex, descIndex, value) => {
-        const newProjects = [...userObject.projects];
-        newProjects[projIndex].description[descIndex] = value;
-        setUserObject(prevState => ({ ...prevState, projects: newProjects }));
+        setUserObject(prevState => {
+            const newProjects = [...prevState.projects];
+            newProjects[projIndex].description[descIndex] = value;
+            return { ...prevState, projects: newProjects };
+        });
     };
+    
     
     const addProject = () => {
         setUserObject(prevState => ({
@@ -834,6 +837,7 @@ const ResumeForm = () => {
                             addDescription={addDescription}
                             removeDescription={removeDescription}
                             removeExperience={removeExperience}
+                            
                         />
                     )}
                     {currentStep === 3 && (
@@ -873,6 +877,7 @@ const ResumeForm = () => {
                             addProjectDescription={addProjectDescription}
                             removeProjectDescription={removeProjectDescription}
                             handleProjectDescriptionChange={handleProjectDescriptionChange}
+                        
                         />
                     )}
 

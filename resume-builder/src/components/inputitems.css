@@ -17,11 +17,46 @@ input, textarea {
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-input:focus, textarea:focus {
-    border-color: rebeccapurple;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+/* Ensure textarea grows dynamically */
+.description-item textarea{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px; 
 }
 
+.description {
+    flex-grow: 1; 
+    width: 100%;
+    min-height: 40px;
+    padding: 10px;
+    resize: none;
+
+}
+
+.input .description,
+.input textarea {
+    width: 100%; 
+    min-height: 40px;
+    max-width: 100%; 
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    flex-grow: 1; 
+}
+
+
+
+/* Expand on input */
+textarea:focus,
+textarea:not(:placeholder-shown) {
+    border-color: rebeccapurple;
+}
+
+/* Placeholder label behavior */
 label {
     position: absolute;
     top: 8px;
@@ -40,18 +75,4 @@ textarea:not(:placeholder-shown) + label {
     left: 0;
     font-size: 12px;
     color: rebeccapurple;
-}
-
-input:focus,
-textarea:focus {
-    border-color: rebeccapurple;
-}
-
-input {
-    height: 40px;
-}
-
-textarea {
-    resize: vertical;
-    min-height: 100px;
 }
