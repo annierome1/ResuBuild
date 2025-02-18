@@ -12,6 +12,7 @@ input, textarea {
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
+    font-family: Arial, sans-serif;
     border-radius: 4px;
     outline: none;
     transition: border-color 0.3s, box-shadow 0.3s;
@@ -46,6 +47,7 @@ input, textarea {
     overflow: hidden;
     box-sizing: border-box;
     flex-grow: 1; 
+    font-family: Arial, sans-serif;
 }
 
 
@@ -65,6 +67,7 @@ label {
     color: #999;
     transition: all 0.3s ease;
     pointer-events: none;
+    display: none;
 }
 
 input:focus + label,
@@ -75,4 +78,5 @@ textarea:not(:placeholder-shown) + label {
     left: 0;
     font-size: 12px;
     color: rebeccapurple;
+    display: block;
 }
