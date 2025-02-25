@@ -9,6 +9,7 @@
     color: black; 
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden; 
+
 }
 
 @media print {
@@ -24,8 +25,13 @@
 .header {
     text-align: center;
     margin-bottom: 15px;
+    max-height: 100px;
 }
-
+.exp-section {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+}
 .header h1 {
     font-size: 20px;
     font-weight: bold;
@@ -57,22 +63,25 @@
 
 /* Experience Section */
 .experience-item {
-    margin-bottom: 5px;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    justify-content: space-between; /* Pushes date to the right */
+    align-items: flex-start; /* Aligns everything to the top */
+    margin-bottom: 10px;
+    grid-template-columns: 4fr 1fr; /* Reduces extra spacing */
 }
 
 .company-title {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    grid-column: 1 / 2;
 }
 
 .company-title h3 {
     font-size: 16px;
     font-weight: bold;
     margin: 0;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .company-title .title {
@@ -141,6 +150,7 @@
     break-inside: avoid;
     margin-top: 0;
     padding: 0;
+    
 }
 
 .education-item .uni h3 {
@@ -206,12 +216,15 @@
 /* Dates and Location (Shared Styling) */
 .dates-location {
     display: flex;
-    justify-content: space-between;
     flex-direction: column;
     align-items: flex-end;
     margin-top: 0;
     text-align: right;
     flex-shrink: 0;
+    grid-column: 2/3;
+
+
+  
 }
 
 .dates-location .dates {

@@ -51,29 +51,35 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
                                         
                     <p>{userObject.location}</p>
                 </div>
+                
             </div>
-            <div className='section'>
-                <h2>Work Experience</h2>
-                {sortedExperiences.map((exp, index) => (
-                    <div key={index} className='experience-item'>
-                    <div className='experience-header'>
-                            <div className ="company-title">
-                        <h3>{exp.company}</h3>
-                        <p className='title'>{exp.title}</p>
-                    </div>
-                        <div className='dates-location'>
-                            <span className='dates'>
-                                {exp.startDate ? new Date(exp.startDate).toLocaleDateString() : ''} - {exp.currentlyWorking ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString() : ''}
-                            </span>
-                            <div className='location'>{exp.location}</div>
+            <div className='exp-section'>
+                <div className='section'>
+                    <h2>Work Experience</h2>
+                    {sortedExperiences.map((exp, index) => (
+                        <div key={index} className='experience-item'>
+                            {/* Left Column (Company and Job Details) */}
+                            <div className="company-title">
+                                <h3>{exp.company}</h3>
+                                <p className='title'>{exp.title}</p>
+                                <ul className='description'>
+                                    {exp.description.map((desc, idx) => <li key={idx}>{desc}</li>)}
+                                </ul>
+                            </div>
+
+                            {/* Right Column (Dates & Location) */}
+                            <div className='dates-location'>
+                                <span className='dates'>
+                                    {exp.startDate ? new Date(exp.startDate).toLocaleDateString() : ''} - 
+                                    {exp.currentlyWorking ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString() : ''}
+                                </span>
+                                <div className='location'>{exp.location}</div>
+                            </div>
                         </div>
-                        <ul className='description'>
-                            {exp.description.map((desc, idx) => <li key={idx}>{desc}</li>)}
-                        </ul>
-                    </div>
+                    ))}
                 </div>
-                ))}
             </div>
+
             
             {/* Projects Section */}
             {userObject.projects && userObject.projects.length > 0 && (
@@ -103,6 +109,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
                         </div>
                     ))}
                 </div>
+                
             )}
 
             
