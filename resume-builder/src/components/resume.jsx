@@ -531,6 +531,7 @@ const ResumeForm = () => {
                 scrollY: 0,
                 width: input.offsetWidth, 
                 height: input.offsetHeight, 
+                
             });
     
             
@@ -540,9 +541,13 @@ const ResumeForm = () => {
             input.style.width = originalStyle.width;
             input.style.height = originalStyle.height;
             input.style.overflow = originalStyle.overflow;
-    
+
+            Object.assign(input.style, originalStyle);
             // Convert canvas to image data
             const imgData = canvas.toDataURL('image/jpeg', 0.7);
+            console.log("Captured Canvas Dimensions:");
+            console.log("Canvas Width:", canvas.width, "px");
+            console.log("Canvas Height:", canvas.height, "px");
     
             
             const pdf = new jsPDF('p', 'mm', 'letter');

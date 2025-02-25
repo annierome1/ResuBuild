@@ -65,7 +65,7 @@
 
 /* Experience Section */
 .experience-item {
-    display: flex;
+    display: grid;
     justify-content: space-between; /* Pushes date to the right */
     align-items: flex-start; /* Aligns everything to the top */
     margin-bottom: 10px;
@@ -74,16 +74,14 @@
     padding: 0 !important; /* Remove extra padding */
     margin: 0 !important;
     width: 100%;
-    margin-bottom: 5px;
-    
-    
+    gap: 5px;
 }
-
+    
 
 .company-title {
     display: flex;
     flex-direction: column;
-    
+    grid-column: 1 / 2;
 }
 
 .company-title h3 {
@@ -213,6 +211,7 @@
     font-weight: bold;
     font-style: italic;
     break-inside: avoid;
+    margin-right: 30px;
 }
 
 .grad-details .city {
@@ -220,6 +219,7 @@
     font-style: italic;
     color: #777;
     margin: 0;
+    margin-right: 30px;
 }
 
 /* Dates and Location (Shared Styling) */
@@ -230,8 +230,6 @@
     grid-column: 2/3;
     min-width: max-content;
     margin-right: 20px;
-
-    
 
 
   
