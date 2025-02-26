@@ -628,7 +628,7 @@ const ResumeForm = () => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'stretch',
-        height: '100%',
+        height: '110%',
         width: '100%', 
         flexGrow: 1,
     };
@@ -672,15 +672,78 @@ const ResumeForm = () => {
                 }}
             >
                 <h1>Resume Builder</h1>
+                
 
                 <span style={{ marginRight: "15px" }}>
                     {userToken && username ? `Welcome, ${username}!` : "Welcome!"}
                 </span>
+                <button onClick={openModal} style={{ marginLeft: "10px" }}>
+                    About
+                </button>
 
                 {userToken ? (
                     <>
-                        {/* Dropdown Menu */}
-                        <div style={{ position: "relative" }}>
+                        
+
+                        {/* Resume Selection Dropdown */}
+                        {resumeList.length > 0 ? (
+                            <div style={{ display: "flex", alignItems: "center", marginLeft: "10px" }}>
+                                <select
+                                    onChange={(e) => setSelectedResume(e.target.value)}
+                                    style={{
+                                        padding: "8px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #ccc",
+                                    }}
+                                    value={selectedResume || ""}
+                                >
+                                    <option value="">Select a resume to load</option>
+                                    {resumeList.map((resume) => (
+                                        <option key={resume._id} value={resume.resumeName}>
+                                            {resume.resumeName}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <button
+                                    onClick={loadSelectedResume}
+                                    style={{
+                                        marginLeft: "10px",
+                                        padding: "8px 12px",
+                                        backgroundColor: "#007bff",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                    }}
+                                    disabled={!selectedResume}
+                                >
+                                    Load Resume
+                                </button>
+                            </div>
+                        ) : (
+                            <span style={{ marginLeft: "10px" }}>No saved resumes</span>
+                        )}
+                    </>
+                ) : (
+                    <button
+                        onClick={() => navigate("/login")}
+                        style={{
+                            backgroundColor: "blue",
+                            color: "white",
+                            border: "none",
+                            padding: "10px 15px",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Login / Sign Up
+                    </button>
+                )}
+
+                
+                {/* Dropdown Menu */}
+                <div style={{ position: "relative" }}>
                             <button
                                 style={{
                                     backgroundColor: "#007bff",
@@ -742,66 +805,6 @@ const ResumeForm = () => {
                                 </div>
                             )}
                         </div>
-
-                        {/* Resume Selection Dropdown */}
-                        {resumeList.length > 0 ? (
-                            <div style={{ display: "flex", alignItems: "center", marginLeft: "10px" }}>
-                                <select
-                                    onChange={(e) => setSelectedResume(e.target.value)}
-                                    style={{
-                                        padding: "8px",
-                                        borderRadius: "5px",
-                                        border: "1px solid #ccc",
-                                    }}
-                                    value={selectedResume || ""}
-                                >
-                                    <option value="">Select a resume to load</option>
-                                    {resumeList.map((resume) => (
-                                        <option key={resume._id} value={resume.resumeName}>
-                                            {resume.resumeName}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <button
-                                    onClick={loadSelectedResume}
-                                    style={{
-                                        marginLeft: "10px",
-                                        padding: "8px 12px",
-                                        backgroundColor: "#007bff",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "5px",
-                                        cursor: "pointer",
-                                    }}
-                                    disabled={!selectedResume}
-                                >
-                                    Load Resume
-                                </button>
-                            </div>
-                        ) : (
-                            <span style={{ marginLeft: "10px" }}>No saved resumes</span>
-                        )}
-                    </>
-                ) : (
-                    <button
-                        onClick={() => navigate("/login")}
-                        style={{
-                            backgroundColor: "blue",
-                            color: "white",
-                            border: "none",
-                            padding: "10px 15px",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Login / Sign Up
-                    </button>
-                )}
-
-                <button onClick={openModal} style={{ marginLeft: "10px" }}>
-                    About
-                </button>
             </header>
 
             {/* Modal */}

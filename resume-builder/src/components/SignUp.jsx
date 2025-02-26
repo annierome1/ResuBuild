@@ -80,7 +80,7 @@ const SignUp = ({ onSignUpSuccess }) => {
 
     return (
         <div>
-            <h2>Sign Up</h2>
+            
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
