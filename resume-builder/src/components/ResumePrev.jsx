@@ -84,7 +84,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
             {/* Projects Section */}
             {userObject.projects && userObject.projects.length > 0 && (
                 <div className="section">
-                    <h2>Projects</h2>
+                    <h2>Projects & Research</h2>
                     {userObject.projects.map((project, index) => (
                         <div key={index} className="project-item">
                             <div className="project-header">

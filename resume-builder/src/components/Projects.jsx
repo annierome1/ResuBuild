@@ -1,7 +1,7 @@
 import React from "react";
 import InputItem from "./inputitems"; 
 import './experience.css'
-const Step5 = ({ userObject, handleProjectChange, handleProjectDescriptionChange, addProject, removeProject, addProjectDescription, removeProjectDescription }) => {
+const Step5 = ({ userObject, handleProjectChange, handleProjectDescriptionChange, addProject, removeProject, addProjectDescription, removeProjectDescription, moveItemDown, moveItemUp }) => {
     return (
         <div className = 'step'>
             <h2>Projects</h2>
@@ -55,6 +55,22 @@ const Step5 = ({ userObject, handleProjectChange, handleProjectDescriptionChange
 
                         <button onClick={() => addProjectDescription(index)}>Add Bullet Point</button>
                         <button onClick={() => removeProject(index)}>Remove Project</button>
+                        <div className="reorder-buttons">
+                        <button
+                            type="button"
+                            onClick={() => moveItemUp('projects', index)}
+                            disabled={index === 0}
+                        >
+                            ↑ Move Up
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => moveItemDown('projects', index)}
+                            disabled={index === userObject.projects.length - 1}
+                        >
+                            ↓ Move Down
+                        </button>
+                        </div>
 
                 </div>
             ))}

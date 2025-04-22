@@ -658,6 +658,21 @@ const ResumeForm = () => {
         alignSelf: 'flex-end',
     };
 
+    const moveItemUp = (key, index) => {
+        if (index === 0) return;
+        const updated = [...userObject[key]];
+        [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+        setUserObject(prev => ({ ...prev, [key]: updated }));
+    };
+    
+    const moveItemDown = (key, index) => {
+        if (index === userObject[key].length - 1) return;
+        const updated = [...userObject[key]];
+        [updated[index + 1], updated[index]] = [updated[index], updated[index + 1]];
+        setUserObject(prev => ({ ...prev, [key]: updated }));
+    };
+    
+
 
     return (
         <div style={{ padding: "20px", height: "100vh" }}>
@@ -845,6 +860,8 @@ const ResumeForm = () => {
                             addDescription={addDescription}
                             removeDescription={removeDescription}
                             removeExperience={removeExperience}
+                            moveItemUp={moveItemUp}
+                            moveItemDown={moveItemDown}
                             
                         />
                     )}
@@ -885,6 +902,8 @@ const ResumeForm = () => {
                             addProjectDescription={addProjectDescription}
                             removeProjectDescription={removeProjectDescription}
                             handleProjectDescriptionChange={handleProjectDescriptionChange}
+                            moveItemUp={moveItemUp}
+                            moveItemDown={moveItemDown}
                         
                         />
                     )}

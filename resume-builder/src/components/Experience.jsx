@@ -11,7 +11,9 @@ const Step2 = ({
     addExperience, 
     addDescription, 
     removeDescription, 
-    removeExperience 
+    removeExperience,
+    moveItemDown,
+    moveItemUp
 }) => {
     const [suggestions, setSuggestions] = useState({});
     const [showSuggestions, setShowSuggestions] = useState({});
@@ -221,6 +223,22 @@ const Step2 = ({
                     <div className="button-group">
                         <button type='button' className='add-description' onClick={() => addDescription(index)}>Add Description</button>
                         <button type='button' className='rExpbutton' onClick={() => removeExperience(index)}>Remove Experience</button>
+                        <div className="reorder-buttons">
+                            <button
+                            type="button"
+                            onClick={() => moveItemUp('experience', index)}
+                            disabled={index === 0}
+                            >
+                            ↑ Move Up
+                            </button>
+                            <button
+                            type="button"
+                            onClick={() => moveItemDown('experience', index)}
+                            disabled={index === userObject.experience.length - 1}
+                            >
+                            ↓ Move Down
+                            </button>
+                        </div>
                     </div>
                 </div>
             ))}
