@@ -63,7 +63,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
             <div className='exp-section'>
                 <div className='section'>
                     <h2>Work Experience</h2>
-                    {sortedExperiences.map((exp, index) => (
+                    {userObject.experience.map((exp, index) => (
                         <div key={index} className='experience-item'>
                             {/* Left Column (Company and Job Details) */}
                             <div className="company-title">
