@@ -42,6 +42,7 @@
 
 .contact {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 5px;
     font-size: 13px;

@@ -32,25 +32,32 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing }, ref) => {
                 <h1>{userObject.firstName} {userObject.lastName}</h1>
                 {userObject.statement && <p className='statement'>{userObject.statement}</p>}
                 <div className='contact'>
-                    <p>{userObject.email}</p>
-                    <p>{userObject.phone}</p>
-                    {userObject.website && (
-                        <p>
-                            <a
-                                href={userObject.website.startsWith("http") 
-                                    ? userObject.website 
-                                    : `https://${userObject.website}`} // ✅ Corrected template string usage
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="website-link"
-                            >
-                                {userObject.website}
-                            </a>
-                        </p>
-                    )}
-                                        
-                    <p>{userObject.location}</p>
-                </div>
+  {[
+    userObject.email,
+    userObject.phone,
+    userObject.website && (
+        <a
+            href={userObject.website.startsWith("http")
+            ? userObject.website
+            : `https://${userObject.website}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="website-link"
+        >
+            {userObject.website}
+        </a>
+        ),
+        userObject.location
+    ]
+        .filter(Boolean) // remove any falsy values
+        .map((item, i, arr) => (
+        <span key={i}>
+            {item}{i < arr.length - 1 && <span className="divider"> • </span>}
+
+        </span>
+        ))}
+    </div>
+
                 
             </div>
             <div className='exp-section'>
