@@ -59,7 +59,7 @@
 .section h2 {
     font-size: 16px;
     border-bottom: 2px solid #333;
-    padding-bottom: 5px;
+    padding-bottom: 0px;
     margin-bottom: 0px;
     text-transform: uppercase;
 }
@@ -147,6 +147,7 @@
     margin: 0 0 0.5rem 1rem;   /* 0 top, 0 right, 8px bottom, 16px indent */
     padding: 0;                /* remove any extra padding */
     list-style: disc inside;   /* keep bullets inside the indent */
+    list-style-position: outside;
     font-size: 14px;
   }
 
