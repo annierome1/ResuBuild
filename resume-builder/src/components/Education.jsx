@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import InputItem from './inputitems';
 
+
 const Step3 = ({ userObject, handleChange, handleDateChange, handleExtracurricularChange, removeExtracurricular, addExtracurricular, handleGPAChange, removeGPA, addGPA}) => {
     return (
         <div className='step'>

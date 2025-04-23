@@ -45,7 +45,6 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                     </div>
                 </div>
 
-                {/* Section Rendering Based on Order */}
                 {sectionOrder.map((sectionKey) => {
                     switch (sectionKey) {
                         case 'experience':
@@ -64,10 +63,17 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                                                 </ul>
                                             </div>
                                             <div className='dates-location'>
-                                                <span className='dates'>
-                                                    {exp.startDate ? new Date(exp.startDate).toLocaleDateString() : ''} - 
-                                                    {exp.currentlyWorking ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString() : ''}
-                                                </span>
+                                            <span className='dates'>
+                                                    {[ 
+                                                        exp.startDate && new Date(exp.startDate).toLocaleDateString(),
+                                                        exp.currentlyWorking ? 'Present' 
+                                                        : exp.endDate && new Date(exp.endDate).toLocaleDateString()
+                                                    ]
+                                                    .filter(Boolean)
+                                                    .join(' - ')
+                                                    }
+                                                    </span>
+
                                                 <div className='location'>{exp.location}</div>
                                             </div>
                                         </div>
@@ -105,38 +111,37 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                                 </div>
                             );
 
-                        case 'education':
-                            return (
-                                <div key="education" className='section'>
+                            case 'education':
+                                return (
+                                  <div key="education" className="section education-section">
                                     <h2>Education</h2>
                                     <div className="education-item">
-                                        <div className="uni">
-                                            <h3>{userObject.uni}</h3>
-                                            <p className="title">{userObject.degree}</p>
-                                        </div>
-                                        <div className="grad-details">
-                                            <p className="grad-date">
-                                                {userObject.gradDate ? new Date(userObject.gradDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : ''}
+                                      {/* Left: University & Degree */}
+                                      <div className="edu-left">
+                                        <h3>{userObject.uni}</h3>
+                                        <p className="degree">{userObject.degree}</p>
+                                      </div>
+                              
+                                      {/* Right: Grad Date & City */}
+                                      <div className="edu-right">
+                                      <p className="grad-date">
+                                            {userObject.gradDate
+                                                ? new Date(userObject.gradDate)
+                                                    .toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                                                    .replace(/(\w+)\s(\d{4})/, '$1, $2')
+                                                : ''}
                                             </p>
-                                            <p className="city">{userObject.city}</p>
-                                        </div>
-                                        {(userObject.gpaEntries?.length > 0 || (userObject.extracurriculars && userObject.extracurriculars.length > 0)) && (
-                                            <ul className="description">
-                                                {userObject.gpaEntries.map((gpaEntry, idx) => (
-                                                    <li key={idx}><strong>GPA:</strong> {gpaEntry}</li>
-                                                ))}
-                                                {userObject.extracurriculars?.length > 0 && (
-                                                    <li><strong>Clubs and Extracurriculars:</strong> {userObject.extracurriculars.join('; ')}</li>
-                                                )}
-                                            </ul>
-                                        )}
+
+                                        <p className="city">{userObject.city}</p>
+                                      </div>
                                     </div>
-                                </div>
-                            );
+                                  </div>
+                                );
+                              
 
                         case 'skills':
                             return (
-                                <div key="skills" className='section'>
+                                <div key="skills" className='skill'>
                                     <h2>Skills & Courses Taken</h2>
                                     <ul className='description'>
                                         <ul className="skills-courses">

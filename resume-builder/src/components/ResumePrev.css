@@ -60,7 +60,7 @@
     font-size: 16px;
     border-bottom: 2px solid #333;
     padding-bottom: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
     text-transform: uppercase;
 }
 
@@ -83,6 +83,7 @@
     display: flex;
     flex-direction: column;
     grid-column: 1 / 2;
+    margin-bottom: 5px;
 }
 
 .company-title h3 {
@@ -100,15 +101,15 @@
 
 .experience-item .description {
     margin: 0;
-    padding-left: 16px; 
+    padding-left: 14px; 
     list-style-type: disc;
     font-size: 14px;
 }
 /* Projects Section */
 .project-item {
-    padding: 15px; /* Add separation between projects */
-    margin-bottom: 10px;
-}
+    padding: 5px;              
+    margin-bottom: 1rem;      
+  }
 
 /* Title and Link in One Row */
 .project-header {
@@ -116,7 +117,8 @@
     justify-content: space-between; /* Push title left and link right */
     align-items: center;
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
+    margin: 0 0 0.25rem 0;
 }
 
 /* Project Title Styling */
@@ -142,86 +144,124 @@
 
 /* Description Styling */
 .project-description {
-    margin: 0;
-    padding-left: 16px; 
-    list-style-type: disc;
+    margin: 0 0 0.5rem 1rem;   /* 0 top, 0 right, 8px bottom, 16px indent */
+    padding: 0;                /* remove any extra padding */
+    list-style: disc inside;   /* keep bullets inside the indent */
     font-size: 14px;
-    align-items: flex-start;
-}
+  }
 
 
 
 
-/* Education Section */
-.education-item {
-    font-size: 14px;
-    break-inside: avoid;
-    margin-top: 0;
-    padding: 0;
-    
-}
+/* ---- Education Section Styles ---- */
 
-.education-item .uni h3 {
-    font-weight: bold;
-    margin: 0;
-}
-
-.education-item p,
-.uni .title {
-    font-style: italic;
-    margin: 0;
-    padding: 0;
-    
-}
-
-.education-item .description {
-    font-size: 14px;
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
+/* Tighten overall section vertical spacing */
+.education-section {
+    margin-bottom: 1rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0;
+  }
+  
+  /* Flex container for left/right halves */
+  .education-item {
     display: flex;
-    flex-direction: column;
-    
-}
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 5px;
+  }
+  
+  /* Left column */
+  .edu-left h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .edu-left .degree {
+    margin: 0;
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 0.5rem;
+  }
+  
+  /* Right column */
+  .edu-right {
+    text-align: right;
+  }
+  .edu-right .grad-date{
+    margin: 0;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.2;
+    font-weight: bold;
+    margin-right: 20px;
+  }
 
+  .edu-right .city {
+    margin: 0;
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.2;
+    color: #777;
+    margin-right: 20px;
+  }
+  
 /* Skills and Certifications */
-
 .description .skills-courses {
     list-style-type: none;
     break-inside: avoid;
-    margin-top: 0;
     padding: 0;
+    gap: 0.5rem;
 }
 
-.section .description{
+.skill .description{
     font-size: 14px;
+    text-align: left;
+    margin-left: 0;
+    padding-left: 0;
     
 }
-/* Grad Details */
-.grad-details {
+
+.skill h2 {
+    margin-bottom: 0.5rem;  
+    margin: 0;
+    font-size: 16px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+  }
+  
+
+.skills-courses {
+    list-style: none;
+    padding: 0;
+    margin: 0;              
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    margin: 0;
-    font-style: italic;
-    
-}
+    gap: 0.75rem;           
+  }
+  
 
-.grad-details .grad-date {
-    font-size: 14px;
-    font-weight: bold;
-    font-style: italic;
-    break-inside: avoid;
-    margin-right: 30px;
-}
+  .skills-courses {
+    margin-top: 0.5rem;     
+  }
+  
 
-.grad-details .city {
-    font-size: 14px;
-    font-style: italic;
-    color: #777;
-    margin: 0;
-    margin-right: 30px;
-}
+  .skills-courses li + li {
+    margin-top: 0.5rem;      
+  }
+  
+  /* 5. Tweak the text sizing slightly for balance */
+  .skills-courses li {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+  
+  /* 6. Optional: make the <strong> labels stand out a touch */
+  .skills-courses li strong {
+    font-weight: 600;
+  }
+
+
 
 /* Dates and Location (Shared Styling) */
 .dates-location {
