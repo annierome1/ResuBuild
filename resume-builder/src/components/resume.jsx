@@ -37,6 +37,34 @@ const ResumeForm = () => {
         };
     });
 
+    const [sectionOrder, setSectionOrder] = useState([
+        'experience',
+        'projects',
+        'education',
+        'skills'
+      ]);
+      
+      const moveSectionUp = (sectionKey) => {
+        setSectionOrder((prevOrder) => {
+          const index = prevOrder.indexOf(sectionKey);
+          if (index <= 0) return prevOrder;
+          const newOrder = [...prevOrder];
+          [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+          return newOrder;
+        });
+      };
+      
+      const moveSectionDown = (sectionKey) => {
+        setSectionOrder((prevOrder) => {
+          const index = prevOrder.indexOf(sectionKey);
+          if (index === -1 || index === prevOrder.length - 1) return prevOrder;
+          const newOrder = [...prevOrder];
+          [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
+          return newOrder;
+        });
+      };
+      
+
 
 
     
@@ -65,7 +93,6 @@ const ResumeForm = () => {
         }
     }, [userToken, username]);
 
-    // Save progress to backend
     const saveToBackend = async (token) => {
         if (!token) {
             alert('Please log in to save your progress.');
@@ -78,17 +105,21 @@ const ResumeForm = () => {
             return;
         }
     
-        // Check if username is available
         if (!username) {
             alert("Error: Username is missing. Please log in again.");
             return;
         }
     
         try {
+            const userObjectWithOrder = {
+                ...userObject,
+                sectionOrder // ✅ Include current section order
+            };
+    
             const requestBody = {
                 username,
                 resumeName: trimmedResumeName,
-                userObject,
+                userObject: userObjectWithOrder
             };
     
             const response = await fetch('/api/resume/save', {
@@ -99,6 +130,7 @@ const ResumeForm = () => {
                 },
                 body: JSON.stringify(requestBody),
             });
+    
             const responseData = await response.json();
             if (response.ok) {
                 alert('Resume saved successfully!');
@@ -109,6 +141,7 @@ const ResumeForm = () => {
             console.error('Error saving resume:', error);
         }
     };
+    
     
     
     
@@ -134,22 +167,31 @@ const ResumeForm = () => {
         }
     };
 
-    // Load the selected resume
     const loadSelectedResume = async () => {
         if (!userToken || !selectedResume) {
             alert("Please select a resume to load.");
             return;
         }
-
+    
         try {
             const response = await fetch(`/api/resume/load?username=${username}&resumeName=${selectedResume}`, {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${userToken}` },
             });
-
+    
             const data = await response.json();
             if (response.ok) {
-                setUserObject(data.userObject);
+                const loadedUserObject = data.userObject;
+    
+                setUserObject(loadedUserObject);
+    
+                //  Set section order from loaded data or fallback to default
+                if (loadedUserObject.sectionOrder) {
+                    setSectionOrder(loadedUserObject.sectionOrder);
+                } else {
+                    setSectionOrder(['experience', 'projects', 'education', 'skills']);
+                }
+    
                 alert(`Resume "${selectedResume}" loaded successfully!`);
             } else {
                 alert("Failed to load resume.");
@@ -158,6 +200,7 @@ const ResumeForm = () => {
             console.error("Error loading resume:", error);
         }
     };
+    
     
     
 
@@ -914,12 +957,24 @@ const ResumeForm = () => {
                         nextStep={nextStep}
                         prevStep={prevStep}
                     />
+                    <div style={{ marginTop: '20px' }}>
+                    <h3>Reorder Sections</h3>
+                    {sectionOrder.map((sectionKey, index) => (
+                        <div key={sectionKey} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ flex: 1, textTransform: 'capitalize' }}>{sectionKey}</span>
+                        <button onClick={() => moveSectionUp(sectionKey)} disabled={index === 0}>↑</button>
+                        <button onClick={() => moveSectionDown(sectionKey)} disabled={index === sectionOrder.length - 1}>↓</button>
+                        </div>
+                    ))}
+                    </div>
+
                 </div>
                 <div style={previewContainerStyle} ref={resumeRef}>
                 <ResumePreview
                     ref={resumeRef}
                     userObject={userObject}
                     isOverflowing={isOverflowing}
+                    sectionOrder = {sectionOrder}
                 />
                 </div>
             </div>
