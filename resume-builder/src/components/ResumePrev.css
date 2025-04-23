@@ -108,7 +108,7 @@
 /* Projects Section */
 .project-item {
     padding: 5px;              
-    margin-bottom: 1rem;      
+    margin: 0;      
   }
 
 /* Title and Link in One Row */
