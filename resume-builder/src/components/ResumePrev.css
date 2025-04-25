@@ -9,6 +9,7 @@
     color: black; 
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden; 
+    margin-left: 1.5rem;
 
 }
 
@@ -18,6 +19,7 @@
         height: 1056px;
         margin: 0;
         box-shadow: none;
+        
     }
 
 }
@@ -27,6 +29,7 @@
     text-align: center;
     margin-bottom: 15px;
     max-height: 100px;
+    
 }
 .exp-section {
     display: flex;
@@ -62,6 +65,8 @@
     padding-bottom: 0px;
     margin-bottom: 0px;
     text-transform: uppercase;
+    margin-left: 1rem;
+    
 }
 
 /* Experience Section */
@@ -69,13 +74,12 @@
     display: grid;
     justify-content: space-between; /* Pushes date to the right */
     align-items: flex-start; /* Aligns everything to the top */
-    margin-bottom: 10px;
     grid-template-columns: 3fr auto; /* Reduces extra spacing */
     margin-bottom: 5px;
     padding: 0 !important; /* Remove extra padding */
-    margin: 0 !important;
     width: 100%;
     gap: 5px;
+    margin-left: 1rem;
 }
     
 
@@ -108,7 +112,8 @@
 /* Projects Section */
 .project-item {
     padding: 5px;              
-    margin-bottom:  0.5rem;      
+    margin-bottom:  0.5rem;  
+    margin-left: 1rem;    
   }
 
 /* Title and Link in One Row */
@@ -177,6 +182,7 @@
     justify-content: space-between;
     align-items: baseline;
     margin-top: 5px;
+    margin-left: 1rem;
   }
   
   /* Left column */
@@ -219,6 +225,7 @@
     break-inside: avoid;
     padding: 0;
     gap: 0.5rem;
+    margin-left: 1rem;
 }
 
 .skill .description{
@@ -237,6 +244,7 @@
     padding-bottom: 5px;
     margin-bottom: 0px;
     text-transform: uppercase;
+    margin-left: 1rem;
   }
   
 
