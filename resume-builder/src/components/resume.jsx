@@ -512,6 +512,40 @@ const ResumeForm = () => {
         // Update overflow state
         setIsOverflowing(totalContentHeight > containerHeight);
     };
+
+    const [isSaveAsModalOpen, setSaveAsModalOpen] = useState(false);
+    const [newResumeName, setNewResumeName] = useState('');
+    const handleSaveAsNew = async () => {
+        const name = newResumeName.trim();
+        if (!name) return alert('Please enter a name.');
+      
+        const clone = { ...userObject, resumeName: name };
+        try {
+          const res = await fetch('/api/resume/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({ username, resumeName: name, userObject: clone }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Save failed');
+      
+          // update local state
+          setUserObject(clone);
+          setSelectedResume(name);
+          await fetchResumeList(userToken);
+      
+          alert(`Saved as new resume: "${name}"`);
+          setSaveAsModalOpen(false);
+        } catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+      };
+      
+
     
     
     
@@ -714,6 +748,45 @@ const ResumeForm = () => {
         [updated[index + 1], updated[index]] = [updated[index], updated[index + 1]];
         setUserObject(prev => ({ ...prev, [key]: updated }));
     };
+
+
+    {/*This is the issue*/}
+    const handleDeleteResume = async () => {
+        if (!selectedResume) {
+          return alert('No resume selected to delete.');
+        }
+        if (!window.confirm(`Really delete "${selectedResume}"? This cannot be undone.`)) {
+          return;
+        }
+      
+        try {
+          const response = await fetch('/api/resume/delete', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({
+              username,
+              resumeName: selectedResume,
+            }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Delete failed');
+      
+          // Remove it locally
+          setResumeList(prev => prev.filter(r => r.resumeName !== selectedResume));
+          setSelectedResume('');
+          // Reset the form to a blank resume (or whatever you prefer)
+          createNewResume();
+      
+          alert(`Deleted resume "${data.resumeName || selectedResume}".`);
+        } catch (err) {
+          console.error('Delete failed', err);
+          alert(`Could not delete resume: ${err.message}`);
+        }
+      };
+      
     
 
 
@@ -845,6 +918,31 @@ const ResumeForm = () => {
                                         New Resume
                                     </button>
                                     <button
+                                        onClick={() => {
+                                        setDropdownOpen(false);
+                                        setNewResumeName('');
+                                        setSaveAsModalOpen(true);
+                                        }}
+                                        style={dropdownButtonStyle}
+                                    >
+                                        Save As New…
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setDropdownOpen(false);
+                                            handleDeleteResume();
+                                        }}
+                                        style={{ 
+                                            ...dropdownButtonStyle, 
+                                            backgroundColor: '#dc3545', 
+                                            color: 'white',
+                                            marginTop: '0.5rem'
+                                        }}
+                                        >
+                                        Delete Resume
+                                        </button>
+
+                                    <button
                                         onClick={() => navigate("/cover-letter")}
                                         style={dropdownButtonStyle}
                                     >
@@ -863,6 +961,29 @@ const ResumeForm = () => {
                                 </div>
                             )}
                         </div>
+                        {/* Save As New Modal */}
+                        {isSaveAsModalOpen && (
+                        <div style={modalOverlayStyle}>
+                            <div style={modalContentStyle}>
+                            <h2>Save As New Resume</h2>
+                            <input
+                                type="text"
+                                placeholder="Enter new resume name"
+                                value={newResumeName}
+                                onChange={e => setNewResumeName(e.target.value)}
+                                style={{ width: '100%', padding: '8px', marginBottom: '12px' }}
+                            />
+                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <button onClick={() => setSaveAsModalOpen(false)} style={{ marginRight: '10px' }}>
+                                Cancel
+                                </button>
+                                <button onClick={handleSaveAsNew} style={{ backgroundColor: '#28a745', color: 'white' }}>
+                                Save
+                                </button>
+                            </div>
+                            </div>
+                        </div>
+                        )}
             </header>
 
             {/* Modal */}

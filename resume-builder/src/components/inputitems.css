@@ -30,7 +30,6 @@ input, textarea {
     flex-grow: 1; 
     width: 100%;
     min-height: 40px;
-    
     resize: none;
 
 }

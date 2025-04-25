@@ -176,6 +176,11 @@ app.post('/api/resume/save', async (req, res) => {
 
     try {
         const existingResume = await Resume.findOne({ username, resumeName });
+        if (existingResume && !forceNew) {
+            return res
+              .status(409)
+              .json({ error: 'Resume name already in use. Choose a different name.' });
+          }
 
         if (existingResume) {
             existingResume.userObject = userObject;
@@ -224,6 +229,25 @@ app.get('/api/resume/load', async (req, res) => {
         res.status(500).json({ error: "Error loading resume" });
     }
 });
+
+app.delete('/api/resume/delete', async (req, res) => {
+  const { username, resumeName } = req.body;
+  if (!username || !resumeName) {
+    return res.status(400).json({ error: 'username and resumeName required' });
+  }
+
+  try {
+    const result = await Resume.findOneAndDelete({ username, resumeName });
+    if (!result) {
+      return res.status(404).json({ error: 'Resume not found' });
+    }
+    return res.status(200).json({ message: 'Deleted successfully', resumeName });
+  } catch (err) {
+    console.error('Delete error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 app.post("/api/generate-cover-letter", async (req, res) => {
     const { resumeData, jobDescription } = req.body;
