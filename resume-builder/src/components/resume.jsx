@@ -99,9 +99,9 @@ const ResumeForm = () => {
             return;
         }
     
-        const trimmedResumeName = userObject.resumeName?.trim() || "";
+        const trimmedResumeName = selectedResume || userObject.resumeName?.trim();
         if (!trimmedResumeName) {
-            alert('Please enter a valid resume name before saving.');
+            alert('You must name your resume before saving.');
             return;
         }
     
@@ -113,14 +113,21 @@ const ResumeForm = () => {
         try {
             const userObjectWithOrder = {
                 ...userObject,
-                sectionOrder // ✅ Include current section order
+                sectionOrder 
             };
     
             const requestBody = {
                 username,
                 resumeName: trimmedResumeName,
-                userObject: userObjectWithOrder
+                userObject: userObjectWithOrder,
+                forceNew: false
             };
+            console.log('🛠️ saveToBackend payload:', {
+                username,
+                resumeName: trimmedResumeName,
+                forceNew: false,
+                userObject: userObjectWithOrder
+              });
     
             const response = await fetch('/api/resume/save', {
                 method: 'POST',
@@ -209,9 +216,9 @@ const ResumeForm = () => {
         // Clear local storage
         localStorage.removeItem('token');
         localStorage.removeItem('username');
-        localStorage.removeItem('userObject'); // Clear saved resume data
+        localStorage.removeItem('userObject'); 
     
-        // Reset state
+
         setUserToken(null);
         setUsername(null);
         setUserObject({
@@ -527,7 +534,7 @@ const ResumeForm = () => {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${userToken}`,
             },
-            body: JSON.stringify({ username, resumeName: name, userObject: clone }),
+            body: JSON.stringify({ username, resumeName: name, userObject: clone, forceNew: true }),
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || 'Save failed');

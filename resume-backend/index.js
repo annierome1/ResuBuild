@@ -163,39 +163,37 @@ app.post('/api/login', async (req, res) => {
 
 
 app.post('/api/resume/save', async (req, res) => {
-    let { username, resumeName, userObject } = req.body;
-    if (!username || !resumeName) {
-        return res.status(400).json({ error: "Username and resume name are required" });
-    }
-
-    resumeName = resumeName.trim();
-
-    if (!resumeName) {
-        return res.status(400).json({ error: "Resume name cannot be empty" });
-    }
-
+    const { username, resumeName, userObject, forceNew = false } = req.body;
     try {
-        const existingResume = await Resume.findOne({ username, resumeName });
-        if (existingResume && !forceNew) {
-            return res
-              .status(409)
-              .json({ error: 'Resume name already in use. Choose a different name.' });
-          }
-
-        if (existingResume) {
-            existingResume.userObject = userObject;
-            await existingResume.save();
-            return res.status(200).json({ message: "Resume updated successfully" });
-        } else {
-            const newResume = new Resume({ username, resumeName, userObject });
-            await newResume.save();
-            return res.status(201).json({ message: "Resume saved successfully" });
+      const existing = await Resume.findOne({ username, resumeName });
+  
+      if (forceNew) {
+        if (existing) {
+          return res
+            .status(409)
+            .json({ error: 'Resume name already in use. Choose a different name.' });
         }
-    } catch (error) {
-        console.error("Error saving resume:", error);
-        res.status(500).json({ error: "Error saving resume", details: error.message });
+        const newResume = new Resume({ username, resumeName, userObject });
+        await newResume.save();
+        return res.status(201).json({ message: 'Resume saved as NEW successfully' });
+      } else {
+        if (existing) {
+          existing.userObject = userObject;
+          await existing.save();
+          return res.status(200).json({ message: 'Resume progress saved successfully' });
+        }
+        const newResume = new Resume({ username, resumeName, userObject });
+        await newResume.save();
+        return res.status(201).json({ message: 'Resume progress saved successfully' });
+      }
+    } catch (err) {
+      console.error('Error saving resume:', err);
+      return res
+        .status(500)
+        .json({ error: 'Error saving resume', details: err.message });
     }
-});
+  });
+  
 
 
 
@@ -224,7 +222,7 @@ app.get('/api/resume/load', async (req, res) => {
             return res.status(404).json({ error: "Resume not found" });
         }
 
-        res.status(200).json(resume);
+        
     } catch (error) {
         res.status(500).json({ error: "Error loading resume" });
     }
