@@ -221,6 +221,10 @@ app.get('/api/resume/load', async (req, res) => {
         if (!resume) {
             return res.status(404).json({ error: "Resume not found" });
         }
+        return res.status(200).json({
+                     userObject: resume.userObject,
+                   resumeName: resume.resumeName
+                 });
 
         
     } catch (error) {
