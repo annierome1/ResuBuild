@@ -3,32 +3,34 @@
 .resume-container {
     width: 816px; /* 8.5 inches */
     height: 1056px !important; /* 11 inches */
-    margin: 0 auto; 
-    padding: 10px;
-    background-color: white;
+    margin: 0 !important;
+    padding: 0px;
+    background-color: white !important;
     color: black; 
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden; 
-    margin-left: 1.5rem;
+   
 
 }
-
 @media print {
-    .resume-preview {
-        width: 816px;
-        height: 1056px;
-        margin: 0;
-        box-shadow: none;
-        
-    }
-
+  .resume-container {
+      margin: 0;
+      box-shadow: none;
+  }
 }
+
+.resume-container .header {
+  background-color: white !important;
+}
+
+/* show box‐shadow only on screen */
 
 /* Header Section */
 .header {
     text-align: center;
     margin-bottom: 15px;
     max-height: 100px;
+    align-items: flex-start;
     
 }
 .exp-section {
@@ -66,6 +68,7 @@
     margin-bottom: 0px;
     text-transform: uppercase;
     margin-left: 1rem;
+    margin-bottom: 0.2rem;
     
 }
 
@@ -76,7 +79,8 @@
     align-items: flex-start; /* Aligns everything to the top */
     grid-template-columns: 3fr auto; /* Reduces extra spacing */
     margin-bottom: 5px;
-    padding: 0 !important; /* Remove extra padding */
+    padding: 0 !important;
+    
     width: 100%;
     gap: 5px;
     margin-left: 1rem;
@@ -110,10 +114,10 @@
     font-size: 14px;
 }
 /* Projects Section */
-.project-item {
-    padding: 1px;              
-    margin-bottom:  0rem;  
-    margin-left: 1rem;    
+.project-item {              
+    margin-bottom:  0.5rem;  
+    margin-left: 1rem;   
+
 
   }
 

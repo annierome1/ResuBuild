@@ -10,7 +10,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Login from './Login';
 import { useNavigate } from 'react-router-dom';
-
+import './ResumePrev.css';
 console.log('Login:', Login);
 
 
@@ -581,82 +581,48 @@ const ResumeForm = () => {
     }, []);
 
 
-    const generatePDF = async () => {
-        const input = resumeRef.current;
+    const downloadPdf = async () => {
+        const el = document.querySelector('.resume-container');
+        if (!el) return console.error('No .resume-container found');
     
-        if (!input) {
-            console.error("Resume ref not found!");
-            return;
-        }
+        // temporarily remove any UI-only shadows or offsets
+        const prevStyle = {
+            margin: el.style.margin,
+            boxShadow: el.style.boxShadow
+        };
+        el.style.margin = '0';
+        el.style.boxShadow = 'none';
     
-        try {
-            const originalStyle = {
-                padding: input.style.padding,
-                margin: input.style.margin,
-                boxSizing: input.style.boxSizing,
-                width: input.style.width,
-                height: input.style.height,
-                overflow: input.style.overflow,
-            };
+        // render at CSS pixel size matching letter at 96dpi: 816×1056
+        const canvas = await html2canvas(el, { scale: 1, useCORS: true, backgroundColor: '#ffffff' });
     
-            input.style.padding = '0';
-            input.style.margin = '0';
-            input.style.boxSizing = 'border-box';
-            input.style.width = '8.5in'; 
-            input.style.height = '11in'; 
-            input.style.overflow = 'visible';
+        // restore styles
+        el.style.margin = prevStyle.margin;
+        el.style.boxShadow = prevStyle.boxShadow;
     
-         
-            const canvas = await html2canvas(input, {
-                scale: 2, 
-                useCORS: true,
-                logging: false,
-                scrollX: 0,
-                scrollY: 0,
-                width: input.offsetWidth, 
-                height: input.offsetHeight, 
-                
-            });
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pdf = new jsPDF({ unit: 'pt', format: 'letter', orientation: 'portrait' });
     
-            
-            input.style.padding = originalStyle.padding;
-            input.style.margin = originalStyle.margin;
-            input.style.boxSizing = originalStyle.boxSizing;
-            input.style.width = originalStyle.width;
-            input.style.height = originalStyle.height;
-            input.style.overflow = originalStyle.overflow;
-
-            Object.assign(input.style, originalStyle);
-            // Convert canvas to image data
-            const imgData = canvas.toDataURL('image/jpeg', 0.7);
-            console.log("Captured Canvas Dimensions:");
-            console.log("Canvas Width:", canvas.width, "px");
-            console.log("Canvas Height:", canvas.height, "px");
+        // convert px → pt: (px / 96dpi) * 72pt/in
+        const imgWidthPt  = (canvas.width  / 96) * 72;
+        const imgHeightPt = (canvas.height / 96) * 72;
     
-            
-            const pdf = new jsPDF('p', 'mm', 'letter');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-    
-            // Calculate image dimensions to fit exactly on the page
-            const imgWidth = pdfWidth;
-            const imgHeight = pdfHeight;
-    
-            // Add the image to the PDF, filling the entire page
-            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-    
-            // Save the PDF
-            const firstName = userObject?.firstName || 'FirstName'; 
-            const lastName = userObject?.lastName || 'LastName'; 
-            const fileName = `resume_${firstName}_${lastName}.pdf`;
-    
-            // Save the PDF with the dynamic filename
-            pdf.save(fileName);
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-        }
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidthPt, imgHeightPt);
+        const fileName = `resume_${userObject.firstName || 'First'}_${userObject.lastName || 'Last'}.pdf`;
+        pdf.save(fileName);
     };
-    
+  
+  
+  
+
+  
+  
+
+      
+      
+      
+      
+      
     const modalOverlayStyle = {
         position: "fixed",
         top: 0,
@@ -736,6 +702,7 @@ const ResumeForm = () => {
         flex: 1, 
         boxSizing: 'border-box',
         overflowY: 'auto', 
+
     };
     const buttonStyle = {
         marginTop: '20px',
@@ -807,6 +774,7 @@ const ResumeForm = () => {
                     marginBottom: "20px",
                     borderBottom: "1px solid #ddd",
                     paddingBottom: "10px",
+                    backgroundColor: "#fff"
                 }}
             >
                 <h1>Resume Builder</h1>
@@ -1097,7 +1065,7 @@ const ResumeForm = () => {
                     </div>
 
                 </div>
-                <div style={previewContainerStyle} ref={resumeRef}>
+                <div style={previewContainerStyle}>
                 <ResumePreview
                     ref={resumeRef}
                     userObject={userObject}
@@ -1106,11 +1074,10 @@ const ResumeForm = () => {
                 />
                 </div>
             </div>
-            <button style={buttonStyle}
-                onClick={generatePDF}
-                disabled={isOverflowing}>
-                Download as PDF
-            </button>
+            <button onClick={downloadPdf} disabled={isOverflowing}>
+  Download as PDF
+</button>
+
         </div>
     );
 }

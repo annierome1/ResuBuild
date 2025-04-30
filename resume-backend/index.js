@@ -1,14 +1,16 @@
+import fs from 'fs';
+import path from 'path';
 import fetch from 'node-fetch';
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import User from './models/User.js';
-import Resume from './models/Resume.js'
+import Resume from './models/Resume.js';
+
 
 // Load environment variables
 dotenv.config();
@@ -47,58 +49,6 @@ const authenticate = (req, res, next) => {
         
     }
 };
-
-
-// Generate descriptions endpoint (existing functionality)
-app.post('/api/generate-description', async (req, res) => {
-    const { title } = req.body;
-
-    if (!title) {
-        return res.status(400).json({ error: 'Job title is required' });
-    }
-
-    try {
-        const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are helping fill in a resume, generate one sentence, presice descriptions based on the job the user has worked.",
-                    },
-                    {
-                        role: "user",
-                        content: `Generate 3 professional descriptions of what was done for this job: ${title}`,
-                    }
-                ],
-                max_tokens: 100,
-                n: 1,
-            }),
-        });
-
-        const data = await openAiResponse.json();
-
-        console.log('OpenAI Response Status:', openAiResponse.status);
-        console.log('OpenAI Response Body:', data);
-
-        if (data.choices && Array.isArray(data.choices)) {
-            const suggestions = data.choices.map(choice => choice.message.content.trim());
-            res.json({ suggestions });
-        } else {
-            res.status(500).json({ error: 'Unexpected response from OpenAI' });
-        }
-    } catch (error) {
-        console.error('Error fetching descriptions:', error);
-        res.status(500).send('Error generating descriptions');
-    }
-});
-
-
 
 
 
@@ -340,15 +290,12 @@ app.post("/api/save-cover-letter", async (req, res) => {
 });
 
 // Serve static files from the frontend build folder
-app.use(express.static(path.join(__dirname, '../resume-builder', 'build')));
-
-// Handle all other routes by serving the frontend's index.html
+// Serve static React build
+app.use(express.static(path.join(__dirname, '../resume-builder/build')));
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../resume-builder', 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, '../resume-builder/build/index.html'));
 });
 
-// Start the server
+
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

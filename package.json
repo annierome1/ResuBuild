@@ -12,10 +12,12 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
+    "html2pdf.js": "^0.10.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.4",
     "openai": "^4.58.2",
     "path": "^0.12.7",
+    "puppeteer": "^24.7.2",
     "react-datepicker": "^7.3.0",
     "styled-components": "^6.1.12"
   }
