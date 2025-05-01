@@ -6,17 +6,17 @@ import Step4 from './Skills';
 import Step5 from './Projects';
 import ResumePreview from './ResumePrev';
 import StepNavigation from './Nav';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import Login from './Login';
 import { useNavigate } from 'react-router-dom';
 import './ResumePrev.css';
+import { useReactToPrint } from 'react-to-print';
 console.log('Login:', Login);
 
 
 const ResumeForm = () => {
     const [userToken, setUserToken] = useState(localStorage.getItem('token') || null);
     const [username, setUsername] = useState(localStorage.getItem('username') || null);
+    const previewRef = useRef();
     const [resumeList, setResumeList] = useState([]);
     const [selectedResume, setSelectedResume] = useState("");
     const [userObject, setUserObject] = useState(() => {
@@ -36,6 +36,11 @@ const ResumeForm = () => {
             courses: [],
         };
     });
+
+    const handlePrint = useReactToPrint({
+        content: () => previewRef.current,
+        documentTitle: `resume_${selectedResume}`,
+      });
 
     const [sectionOrder, setSectionOrder] = useState([
         'experience',
@@ -519,6 +524,7 @@ const ResumeForm = () => {
         // Update overflow state
         setIsOverflowing(totalContentHeight > containerHeight);
     };
+    
 
     const [isSaveAsModalOpen, setSaveAsModalOpen] = useState(false);
     const [newResumeName, setNewResumeName] = useState('');
@@ -580,40 +586,7 @@ const ResumeForm = () => {
         return () => observer.disconnect();
     }, []);
 
-
-    const downloadPdf = async () => {
-        const el = document.querySelector('.resume-container');
-        if (!el) return console.error('No .resume-container found');
-    
-        // temporarily remove any UI-only shadows or offsets
-        const prevStyle = {
-            margin: el.style.margin,
-            boxShadow: el.style.boxShadow
-        };
-        el.style.margin = '0';
-        el.style.boxShadow = 'none';
-    
-        // render at CSS pixel size matching letter at 96dpi: 816×1056
-        const canvas = await html2canvas(el, { scale: 1, useCORS: true, backgroundColor: '#ffffff' });
-    
-        // restore styles
-        el.style.margin = prevStyle.margin;
-        el.style.boxShadow = prevStyle.boxShadow;
-    
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const pdf = new jsPDF({ unit: 'pt', format: 'letter', orientation: 'portrait' });
-    
-        // convert px → pt: (px / 96dpi) * 72pt/in
-        const imgWidthPt  = (canvas.width  / 96) * 72;
-        const imgHeightPt = (canvas.height / 96) * 72;
-    
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidthPt, imgHeightPt);
-        const fileName = `resume_${userObject.firstName || 'First'}_${userObject.lastName || 'Last'}.pdf`;
-        pdf.save(fileName);
-    };
-  
-  
-  
+      
 
   
   
@@ -1067,16 +1040,17 @@ const ResumeForm = () => {
                 </div>
                 <div style={previewContainerStyle}>
                 <ResumePreview
-                    ref={resumeRef}
+                    ref={previewRef}
                     userObject={userObject}
                     isOverflowing={isOverflowing}
                     sectionOrder = {sectionOrder}
                 />
                 </div>
             </div>
-            <button onClick={downloadPdf} disabled={isOverflowing}>
-  Download as PDF
+            <button onClick={handlePrint} disabled={isOverflowing}>
+  Print / Save as PDF
 </button>
+
 
         </div>
     );

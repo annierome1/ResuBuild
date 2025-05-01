@@ -1,4 +1,5 @@
 import fs from 'fs';
+import puppeteer from 'puppeteer';
 import path from 'path';
 import fetch from 'node-fetch';
 import express from 'express';
@@ -50,6 +51,61 @@ const authenticate = (req, res, next) => {
     }
 };
 
+
+
+app.post('/api/resume/pdf',  async (req, res) => {
+    const { resumeName } = req.body;
+    if (!resumeName) return res.status(400).send('Missing resumeName');
+  
+    const token = req.headers.authorization.split(' ')[1];
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+    const printUrl =
+      `${clientUrl}/print?resumeName=${encodeURIComponent(resumeName)}`;
+  
+    let browser;
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+  
+      const page = await browser.newPage();
+      // forward the JWT so your React route can load the right data:
+      await page.setExtraHTTPHeaders({ Authorization: `Bearer ${token}` });
+  
+      // navigate and wait for your preview to render
+      await page.goto(printUrl, { waitUntil: 'networkidle0' });
+      // (optionally) wait for the #resume container
+      await page.waitForSelector('#resume', { timeout: 5000 });
+  
+      const pdfBuffer = await page.pdf({
+        format: 'letter',
+        printBackground: true,
+        margin: { top: '0.5in', bottom: '0.5in', left: '0.5in', right: '0.5in' }
+      });
+  
+      await browser.close();
+  
+      res
+        .status(200)
+        .set({
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="resume_${resumeName}.pdf"`,
+          'Content-Length': pdfBuffer.length
+        })
+        .send(pdfBuffer);
+  
+    } catch (err) {
+      if (browser) await browser.close();
+      console.error('PDF gen error:', err);
+      res.status(500).json({ error: 'PDF generation failed', details: err.message });
+    }
+  });
+  
+  
+  
+  
+  
 
 
 app.post('/api/signup', async (req, res) => {
