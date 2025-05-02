@@ -1,2 +1,22 @@
+# ignore every node_modules folder, anywhere in the tree
+**/node_modules/
+
+# if you have a root-level package.json you may also get a top-level node_modules
+/node_modules/
+
+# environment files
 .env
-node_modules/
+**/.env
+
+# build outputs
+/dist/
+/build/
+/frontend/build/
+/backend/dist/
+
+# OS / editor cruft
+.DS_Store
+.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
