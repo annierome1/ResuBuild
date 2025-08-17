@@ -143,11 +143,30 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                                         {userObject.certifications?.length > 0 && (
                                             <li><strong>Certifications:</strong> {userObject.certifications.join('; ')}</li>
                                         )}
-                                        {userObject.skills?.length > 0 && (
-                                            <li><strong>Skills:</strong> {userObject.skills.join('; ')}</li>
+                                        {userObject.programmingLanguages?.length > 0 && (
+                                            <li><strong>Programming Languages:</strong> {userObject.programmingLanguages.join('; ')}</li>
+                                        )}
+                                        {userObject.frameworks?.length > 0 && (
+                                            <li><strong>Frameworks & Libraries:</strong> {userObject.frameworks.join('; ')}</li>
+                                        )}
+                                        {userObject.databases?.length > 0 && (
+                                            <li><strong>Databases:</strong> {userObject.databases.join('; ')}</li>
+                                        )}
+                                        {userObject.devops?.length > 0 && (
+                                            <li><strong>DevOps & Cloud:</strong> {userObject.devops.join('; ')}</li>
                                         )}
                                         {userObject.tools?.length > 0 && (
-                                            <li><strong>Tools:</strong> {userObject.tools.join('; ')}</li>
+                                            <li><strong>Tools & Technologies:</strong> {userObject.tools.join('; ')}</li>
+                                        )}
+                                        {userObject.operatingSystems?.length > 0 && (
+                                            <li><strong>Operating Systems:</strong> {userObject.operatingSystems.join('; ')}</li>
+                                        )}
+                                        {userObject.skills?.length > 0 && (
+                                            <li><strong>General Skills:</strong> {userObject.skills.join('; ')}</li>
+                                            
+                                        )}
+                                        {userObject.softSkills?.length > 0 && (
+                                            <li><strong>Soft Skills:</strong> {userObject.softSkills.join('; ')}</li>
                                         )}
                                     </ul>
                                 </ul>
