@@ -1,4 +1,10 @@
-import React, {useState, useRef, useEffect} from 'react';
+// External packages first
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
+
+//Your components
+import Header from './Header';
 import Step1 from './Personal';
 import Step2 from './Experience';
 import Step3 from './Education';
@@ -7,9 +13,11 @@ import Step5 from './Projects';
 import ResumePreview from './ResumePrev';
 import StepNavigation from './Nav';
 import Login from './Login';
-import { useNavigate } from 'react-router-dom';
+
+
 import './ResumePrev.css';
-import { useReactToPrint } from 'react-to-print';
+
+
 console.log('Login:', Login);
 
 
@@ -31,9 +39,15 @@ const ResumeForm = () => {
             statement: "",
             gpaEntries: [],
             skills: [],
+            programmingLanguages: [],
+            frameworks: [],
+            databases: [],
+            devops: [],
+            tools: [],
+            operatingSystems: [],
+            softSkills: [],
             certifications: [],
             interests: [],
-            courses: [],
         };
     });
 
@@ -301,8 +315,8 @@ const ResumeForm = () => {
             const newProjects = [...prevState.projects];
     
             if (key.startsWith('description')) {
-                const descIndex = key.split('[')[1].split(']')[0]; // Extract index from 'description[0]'
-                newProjects[index].description = newProjects[index].description || []; // Ensure it's an array
+                const descIndex = key.split('[')[1].split(']')[0]; 
+                newProjects[index].description = newProjects[index].description || []; 
                 newProjects[index].description[descIndex] = value;
             } else {
                 newProjects[index] = { ...newProjects[index], [key]: value };
@@ -326,7 +340,7 @@ const ResumeForm = () => {
             ...prevState,
             projects: [
                 ...prevState.projects,
-                { title: '', description: [], technologies: '', link: '' } // Ensure description is an array
+                { title: '', description: [], technologies: '', link: '' } 
             ]
         }));
     };
@@ -341,7 +355,7 @@ const ResumeForm = () => {
     const addProjectDescription = (projIndex) => {
         setUserObject(prevState => {
             const newProjects = [...prevState.projects];
-            newProjects[projIndex].description = newProjects[projIndex].description || []; // Ensure it's an array
+            newProjects[projIndex].description = newProjects[projIndex].description || [];
             newProjects[projIndex].description.push('');
             return { ...prevState, projects: newProjects };
         });
@@ -465,23 +479,143 @@ const ResumeForm = () => {
         setUserObject(prevState => ({ ...prevState, certifications: newCertifications }));
     };
 
-    const addCourse = () => {
+    const addTool = () => {
         setUserObject((prevState) => ({
             ...prevState,
-            courses: prevState.courses ? [...prevState.courses, ""] : [""] // ✅ Ensure courses exists
+            tools: prevState.tools ? [...prevState.tools, ""] : [""] 
         }));
     };
 
-    const handleCourseChange = (index, value) => {
-        const newCourses = [...userObject.courses];
-        newCourses[index] = value;
-        setUserObject(prevState => ({ ...prevState, courses: newCourses }));
+    const handleToolChange = (index, value) => {
+        const newTools = [...userObject.tools];
+        newTools[index] = value;
+        setUserObject(prevState => ({ ...prevState, tools: newTools }));
     };
 
-    const removeCourse = (index) => {
-        const newCourses = [...userObject.courses];
-        newCourses.splice(index, 1);
-        setUserObject(prevState => ({ ...prevState, courses: newCourses }));
+    const removeTool = (index) => {
+        const newTools = [...userObject.tools];
+        newTools.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, tools: newTools }));
+    };
+
+    // Programming Languages
+    const addProgrammingLanguage = () => {
+        setUserObject(prevState => ({
+            ...prevState,
+            programmingLanguages: [...(prevState.programmingLanguages || []), '']
+        }));
+    };
+
+    const handleProgrammingLanguageChange = (index, value) => {
+        const newProgrammingLanguages = [...userObject.programmingLanguages];
+        newProgrammingLanguages[index] = value;
+        setUserObject(prevState => ({ ...prevState, programmingLanguages: newProgrammingLanguages }));
+    };
+
+    const removeProgrammingLanguage = (index) => {
+        const newProgrammingLanguages = [...userObject.programmingLanguages];
+        newProgrammingLanguages.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, programmingLanguages: newProgrammingLanguages }));
+    };
+
+    // Frameworks
+    const addFramework = () => {
+        setUserObject(prevState => ({
+            ...prevState,
+            frameworks: [...(prevState.frameworks || []), '']
+        }));
+    };
+
+    const handleFrameworkChange = (index, value) => {
+        const newFrameworks = [...userObject.frameworks];
+        newFrameworks[index] = value;
+        setUserObject(prevState => ({ ...prevState, frameworks: newFrameworks }));
+    };
+
+    const removeFramework = (index) => {
+        const newFrameworks = [...userObject.frameworks];
+        newFrameworks.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, frameworks: newFrameworks }));
+    };
+
+    // Databases
+    const addDatabase = () => {
+        setUserObject(prevState => ({
+            ...prevState,
+            databases: [...(prevState.databases || []), '']
+        }));
+    };
+
+    const handleDatabaseChange = (index, value) => {
+        const newDatabases = [...userObject.databases];
+        newDatabases[index] = value;
+        setUserObject(prevState => ({ ...prevState, databases: newDatabases }));
+    };
+
+    const removeDatabase = (index) => {
+        const newDatabases = [...userObject.databases];
+        newDatabases.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, databases: newDatabases }));
+    };
+
+    // DevOps
+    const addDevOps = () => {
+        setUserObject(prevState => ({
+            ...prevState,
+            devops: [...(prevState.devops || []), '']
+        }));
+    };
+
+    const handleDevOpsChange = (index, value) => {
+        const newDevOps = [...userObject.devops];
+        newDevOps[index] = value;
+        setUserObject(prevState => ({ ...prevState, devops: newDevOps }));
+    };
+
+    const removeDevOps = (index) => {
+        const newDevOps = [...userObject.devops];
+        newDevOps.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, devops: newDevOps }));
+    };
+
+    // Operating Systems
+    const addOS = () => {
+        setUserObject(prevState => ({
+            ...prevState,
+            operatingSystems: [...(prevState.operatingSystems || []), '']
+        }));
+    };
+
+    const handleOSChange = (index, value) => {
+        const newOperatingSystems = [...userObject.operatingSystems];
+        newOperatingSystems[index] = value;
+        setUserObject(prevState => ({ ...prevState, operatingSystems: newOperatingSystems }));
+    };
+
+    const removeOS = (index) => {
+        const newOperatingSystems = [...userObject.operatingSystems];
+        newOperatingSystems.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, operatingSystems: newOperatingSystems }));
+    };
+
+    // Soft Skills
+    const addSoftSkill = () => {
+        setUserObject(prevState => ({
+            ...prevState,
+            softSkills: [...(prevState.softSkills || []), '']
+        }));
+    };
+
+    const handleSoftSkillChange = (index, value) => {
+        const newSoftSkills = [...userObject.softSkills];
+        newSoftSkills[index] = value;
+        setUserObject(prevState => ({ ...prevState, softSkills: newSoftSkills }));
+    };
+
+    const removeSoftSkill = (index) => {
+        const newSoftSkills = [...userObject.softSkills];
+        newSoftSkills.splice(index, 1);
+        setUserObject(prevState => ({ ...prevState, softSkills: newSoftSkills }));
     };
 
     const nextStep = () => setCurrentStep(prevStep => prevStep + 1);
@@ -499,7 +633,7 @@ const ResumeForm = () => {
         // Include header height
         if (header) {
             const headerRect = header.getBoundingClientRect();
-            totalContentHeight += headerRect.height; // Include full height (with margins/padding)
+            totalContentHeight += headerRect.height; 
             console.log("Header height with margins/padding:", headerRect.height);
         }
     
@@ -739,202 +873,33 @@ const ResumeForm = () => {
 
     return (
         <div style={{ padding: "20px", height: "100vh" }}>
-            <header
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "20px",
-                    borderBottom: "1px solid #ddd",
-                    paddingBottom: "10px",
-                    backgroundColor: "#fff"
-                }}
-            >
-                <h1>Resume Builder</h1>
-                
 
-                <span style={{ marginRight: "15px" }}>
-                    {userToken && username ? `Welcome, ${username}!` : "Welcome!"}
-                </span>
-                <button onClick={openModal} style={{ marginLeft: "10px" }}>
-                    About
-                </button>
+    <Header
+        userToken={userToken}
+        username={username}
+        resumeList={resumeList}
+        selectedResume={selectedResume}
+        setSelectedResume={setSelectedResume}
+        loadSelectedResume={loadSelectedResume}
+        saveToBackend={saveToBackend}
+        createNewResume={createNewResume}
+        handleDeleteResume={handleDeleteResume}
+        handleLogout={handleLogout}
+        openModal={openModal}
+        isDropdownOpen={isDropdownOpen}
+        setDropdownOpen={setDropdownOpen}
+        isSaveAsModalOpen={isSaveAsModalOpen}
+        setSaveAsModalOpen={setSaveAsModalOpen}
+        newResumeName={newResumeName}
+        setNewResumeName={setNewResumeName}
+        handleSaveAsNew={handleSaveAsNew}
+        closeModal={closeModal}
+        modalOverlayStyle={modalOverlayStyle}
+        modalContentStyle={modalContentStyle}
+        dropdownButtonStyle={dropdownButtonStyle}
+        closeButtonStyle={closeButtonStyle}
+      />
 
-                {userToken ? (
-                    <>
-                        
-
-                        {/* Resume Selection Dropdown */}
-                        {resumeList.length > 0 ? (
-                            <div style={{ display: "flex", alignItems: "center", marginLeft: "10px" }}>
-                                <select
-                                    onChange={(e) => setSelectedResume(e.target.value)}
-                                    style={{
-                                        padding: "8px",
-                                        borderRadius: "5px",
-                                        border: "1px solid #ccc",
-                                    }}
-                                    value={selectedResume || ""}
-                                >
-                                    <option value="">Select a resume to load</option>
-                                    {resumeList.map((resume) => (
-                                        <option key={resume._id} value={resume.resumeName}>
-                                            {resume.resumeName}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <button
-                                    onClick={loadSelectedResume}
-                                    style={{
-                                        marginLeft: "10px",
-                                        padding: "8px 12px",
-                                        backgroundColor: "#007bff",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "5px",
-                                        cursor: "pointer",
-                                    }}
-                                    disabled={!selectedResume}
-                                >
-                                    Load Resume
-                                </button>
-                            </div>
-                        ) : (
-                            <span style={{ marginLeft: "10px" }}>No saved resumes</span>
-                        )}
-                    </>
-                ) : (
-                    <button
-                        onClick={() => navigate("/login")}
-                        style={{
-                            backgroundColor: "blue",
-                            color: "white",
-                            border: "none",
-                            padding: "10px 15px",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Login / Sign Up
-                    </button>
-                )}
-
-                
-                {/* Dropdown Menu */}
-                <div style={{ position: "relative" }}>
-                            <button
-                                style={{
-                                    backgroundColor: "#007bff",
-                                    color: "white",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                    border: "none",
-                                    fontSize: "16px",
-                                    fontWeight: "bold",
-                                    transition: "background 0.3s ease",
-                                }}
-                                onClick={() => setDropdownOpen(!isDropdownOpen)}
-                            >
-                                Actions ▼
-                            </button>
-
-                            {isDropdownOpen && (
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        top: "45px",
-                                        right: "0",
-                                        backgroundColor: "white",
-                                        borderRadius: "10px",
-                                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-                                        zIndex: 1000,
-                                        padding: "10px",
-                                        width: "200px",
-                                    }}
-                                >
-                                    <button
-                                        onClick={() => saveToBackend(userToken)}
-                                        style={dropdownButtonStyle}
-                                    >
-                                        Save Progress
-                                    </button>
-                                    <button
-                                        onClick={createNewResume}
-                                        style={{ ...dropdownButtonStyle, backgroundColor: "#28a745" }}
-                                    >
-                                        New Resume
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                        setDropdownOpen(false);
-                                        setNewResumeName('');
-                                        setSaveAsModalOpen(true);
-                                        }}
-                                        style={dropdownButtonStyle}
-                                    >
-                                        Save As New…
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setDropdownOpen(false);
-                                            handleDeleteResume();
-                                        }}
-                                        style={{ 
-                                            ...dropdownButtonStyle, 
-                                            backgroundColor: '#dc3545', 
-                                            color: 'white',
-                                            marginTop: '0.5rem'
-                                        }}
-                                        >
-                                        Delete Resume
-                                        </button>
-
-                                    <button
-                                        onClick={() => navigate("/cover-letter")}
-                                        style={dropdownButtonStyle}
-                                    >
-                                        Generate Cover Letter
-                                    </button>
-                                    <button
-                                        onClick={handleLogout}
-                                        style={{
-                                            ...dropdownButtonStyle,
-                                            backgroundColor: "#dc3545",
-                                            color: "white",
-                                        }}
-                                    >
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                        {/* Save As New Modal */}
-                        {isSaveAsModalOpen && (
-                        <div style={modalOverlayStyle}>
-                            <div style={modalContentStyle}>
-                            <h2>Save As New Resume</h2>
-                            <input
-                                type="text"
-                                placeholder="Enter new resume name"
-                                value={newResumeName}
-                                onChange={e => setNewResumeName(e.target.value)}
-                                style={{ width: '100%', padding: '8px', marginBottom: '12px' }}
-                            />
-                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                <button onClick={() => setSaveAsModalOpen(false)} style={{ marginRight: '10px' }}>
-                                Cancel
-                                </button>
-                                <button onClick={handleSaveAsNew} style={{ backgroundColor: '#28a745', color: 'white' }}>
-                                Save
-                                </button>
-                            </div>
-                            </div>
-                        </div>
-                        )}
-            </header>
-
-            {/* Modal */}
             {isModalOpen && (
                 <div style={modalOverlayStyle}>
                     <div style={modalContentStyle}>
@@ -996,13 +961,31 @@ const ResumeForm = () => {
                             handleChange={handleChange}
                             addSkill={addSkill}
                             addCertification={addCertification}
-                            addCourse={addCourse}
+                            addTool={addTool}
+                            addFramework={addFramework}
+                            addDatabase={addDatabase}
+                            addDevOps={addDevOps}
+                            addOS={addOS}
+                            addSoftSkill={addSoftSkill}
+                            addProgrammingLanguage={addProgrammingLanguage}
                             handleSkillChange={handleSkillChange}
                             handleCertificationChange={handleCertificationChange}
-                            handleCourseChange={handleCourseChange}
+                            handleToolChange={handleToolChange}
+                            handleFrameworkChange={handleFrameworkChange}
+                            handleDatabaseChange={handleDatabaseChange}
+                            handleDevOpsChange={handleDevOpsChange}
+                            handleOSChange={handleOSChange}
+                            handleSoftSkillChange={handleSoftSkillChange}
+                            handleProgrammingLanguageChange={handleProgrammingLanguageChange}
                             removeSkill={removeSkill}
                             removeCertification={removeCertification}
-                            removeCourse={removeCourse}
+                            removeTool={removeTool}
+                            removeFramework={removeFramework}
+                            removeDatabase={removeDatabase}
+                            removeDevOps={removeDevOps}
+                            removeOS={removeOS}
+                            removeSoftSkill={removeSoftSkill}
+                            removeProgrammingLanguage={removeProgrammingLanguage}
                         />
                     )}
                     {currentStep === 5 && (

@@ -137,7 +137,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                     case 'skills':
                         return (
                             <div key="skills" className='skill'>
-                                <h2>Skills & Courses Taken</h2>
+                                <h2>Skills</h2>
                                 <ul className='description'>
                                     <ul className="skills-courses">
                                         {userObject.certifications?.length > 0 && (
@@ -146,8 +146,8 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                                         {userObject.skills?.length > 0 && (
                                             <li><strong>Skills:</strong> {userObject.skills.join('; ')}</li>
                                         )}
-                                        {userObject.courses?.length > 0 && (
-                                            <li><strong>Courses Taken:</strong> {userObject.courses.join('; ')}</li>
+                                        {userObject.tools?.length > 0 && (
+                                            <li><strong>Tools:</strong> {userObject.tools.join('; ')}</li>
                                         )}
                                     </ul>
                                 </ul>
