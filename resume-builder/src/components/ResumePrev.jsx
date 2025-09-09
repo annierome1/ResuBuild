@@ -50,7 +50,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                     case 'experience':
                         return (
                             <div key="experience" className="section">
-                                <h2>Work Experience</h2>
+                                <h2>Professional Experience</h2>
                                 {userObject.experience.map((exp, index) => (
                                     <div key={index} className='experience-item'>
                                         <div className="company-title">
@@ -84,7 +84,7 @@ const ResumePreview = React.forwardRef(({ userObject, isOverflowing, sectionOrde
                     case 'projects':
                         return (
                             <div key="projects" className="section">
-                                <h2>Projects & Research</h2>
+                                <h2>Technical Projects</h2>
                                 {userObject.projects.map((project, index) => (
                                     <div key={index} className="project-item">
                                         <div className="project-header">
